@@ -2,10 +2,10 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NameParser;
 using System;
 
-namespace NameParseTest
+namespace NameParserTest
 {
     [TestClass]
-    public class NameParserTests
+    public partial class NameParserTests
     {
         [TestMethod]
         [ExpectedException(typeof(ArgumentNullException))]
@@ -38,7 +38,7 @@ namespace NameParseTest
             Assert.AreEqual("kennedy", jfk.Last);
             Assert.AreEqual(string.Empty, jfk.Suffix);
             Assert.AreEqual("jack", jfk.Nickname);
-            Assert.AreEqual("president john fitzgerald kennedy", jfk.FullName);
+            Assert.AreEqual("president john fitzgerald kennedy (jack)", jfk.ToString());
             Assert.AreEqual("kennedy", jfk.LastBase);
             Assert.AreEqual(string.Empty, jfk.LastPrefixes);
 
@@ -50,7 +50,7 @@ namespace NameParseTest
             Assert.AreEqual("Kennedy", jfk.Last);
             Assert.AreEqual(string.Empty, jfk.Suffix);
             Assert.AreEqual("Jack", jfk.Nickname);
-            Assert.AreEqual("President John Fitzgerald Kennedy", jfk.FullName);
+            Assert.AreEqual("President John Fitzgerald Kennedy (Jack)", jfk.ToString());
             Assert.AreEqual("Kennedy", jfk.LastBase);
             Assert.AreEqual(string.Empty, jfk.LastPrefixes);
         }
@@ -66,7 +66,7 @@ namespace NameParseTest
             Assert.AreEqual("nixon", nixon.Last);
             Assert.AreEqual(string.Empty, nixon.Suffix);
             Assert.AreEqual("dick", nixon.Nickname);
-            Assert.AreEqual("mr president richard nixon", nixon.FullName);
+            Assert.AreEqual("mr president richard nixon (dick)", nixon.ToString());
             Assert.AreEqual("nixon", nixon.LastBase);
             Assert.AreEqual(string.Empty, nixon.LastPrefixes);
 
@@ -78,7 +78,7 @@ namespace NameParseTest
             Assert.AreEqual("Nixon", nixon.Last);
             Assert.AreEqual(string.Empty, nixon.Suffix);
             Assert.AreEqual("Dick", nixon.Nickname);
-            Assert.AreEqual("Mr President Richard Nixon", nixon.FullName);
+            Assert.AreEqual("Mr President Richard Nixon (Dick)", nixon.ToString());
             Assert.AreEqual("Nixon", nixon.LastBase);
             Assert.AreEqual(string.Empty, nixon.LastPrefixes);
         }

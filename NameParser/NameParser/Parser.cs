@@ -1,9 +1,11 @@
+using System.Diagnostics;
+using System.Text.RegularExpressions;
+
 namespace NameParser
 {
     using System;
     using System.Collections.Generic;
     using System.Linq;
-    using System.Text.RegularExpressions;
 
     /// <summary>
     /// Parse a person's name into individual components.
@@ -14,6 +16,7 @@ namespace NameParser
     public partial class HumanName
     {
         #region Properties
+
         /// <summary>
         /// Indicates whether any values were parsed out of the provided <see cref="FullName"/>
         /// </summary>
@@ -56,7 +59,7 @@ namespace NameParser
 
         public string Last => string.Join(" ", _LastList);
 
-        public string Suffix => string.Join(" ", _SuffixList);
+        public string Suffix => string.Join(", ", _SuffixList);
 
         public string Nickname => string.Join(" ", _NicknameList);
 
@@ -70,6 +73,7 @@ namespace NameParser
 
         public string LastBase => string.Join(" ", _LastBaseList);
         public string LastPrefixes => string.Join(" ", _LastPrefixList);
+
         #endregion
 
         private string _FullName, _OriginalName;
@@ -78,7 +82,7 @@ namespace NameParser
         private IList<string> _FirstList;
         private IList<string> _MiddleList;
         private IList<string> _LastList;
-        private IList<string> _SuffixList;
+        private List<string> _SuffixList;
         private IList<string> _NicknameList;
         private IList<string> _LastBaseList;
         private IList<string> _LastPrefixList;
@@ -109,13 +113,13 @@ namespace NameParser
             }
 
             return left.Title == right.Title
-                && left.First == right.First
-                && left.Middle == right.Middle
-                && left.Last == right.Last
-                && left.Suffix == right.Suffix
-                &&
-                (string.IsNullOrEmpty(left.Nickname) || string.IsNullOrEmpty(right.Nickname) ||
-                left.Nickname == right.Nickname);
+                   && left.First == right.First
+                   && left.Middle == right.Middle
+                   && left.Last == right.Last
+                   && left.Suffix == right.Suffix
+                   &&
+                   (string.IsNullOrEmpty(left.Nickname) || string.IsNullOrEmpty(right.Nickname) ||
+                    left.Nickname == right.Nickname);
         }
 
         public static bool operator !=(HumanName left, HumanName right)
@@ -175,28 +179,47 @@ namespace NameParser
             return d;
         }
 
-        #region  Parse helpers
-        private static bool IsTitle(string value)
+        public override string ToString()
         {
-            return Titles.Contains(value.ToLower().Replace(".", string.Empty));
+            var output = $"{Title} {First} {Middle} {Last} {Suffix} ({Nickname})".Replace(" ()", "").Replace(" ''", "").Replace(" \"\"", "").Trim(
+                [',',' ']);
+            CollapseWhitespace(ref output);
+            return output;
         }
 
-        private static bool IsConjunction(string piece)
+        #region Parse helpers
+
+        private bool IsTitle(string value)
         {
-            return Conjunctions.Contains(piece.ToLower().Replace(".", string.Empty)) && !IsAnInitial(piece);
+            var lcValue = value.ToLower().Trim('.');
+            return Titles.Contains(lcValue) || CombinedTitles.Contains(lcValue);
+        }
+
+        private bool IsConjunction(string piece)
+        {
+            var lcValue = piece.ToLower();
+            return (Conjunctions.Contains(lcValue) || CombinedConjunctions.Contains(lcValue)) && !IsAnInitial(piece);
         }
 
         private static bool IsPrefix(string piece)
         {
-            return Prefixes.Contains(piece.ToLower().Replace(".", string.Empty)) && !IsAnInitial(piece);
+            return Prefixes.Contains(piece.ToLower().Trim('.'));
         }
 
-        private static bool IsSuffix(string piece)
+        private static bool IsRomanNumeral(string value)
         {
-            return Suffixes.Contains(piece.Replace(".", string.Empty).ToLower()) && !IsAnInitial(piece);
+            return RegexRomanNumeral.IsMatch(value);
         }
 
-        private static bool AreSuffixes(IEnumerable<string> pieces)
+        private bool IsSuffix(string piece)
+        {
+            var lcValue = piece.ToLower().Trim('.');
+            return (Suffixes.Contains(lcValue.Replace(".", string.Empty)) ||
+                    SuffixesNotAcronyms.Contains(lcValue) ||
+                    CombinedSuffixesNotAcronyms.Contains(lcValue)) && !IsAnInitial(piece);
+        }
+
+        private bool AreSuffixes(IEnumerable<string> pieces)
         {
             return pieces.Any() && pieces.All(IsSuffix);
         }
@@ -206,33 +229,43 @@ namespace NameParser
         /// </summary>
         /// <param name="piece">A single word from a name</param>
         /// <returns>False if <see cref="piece"/> is a prefix (de, abu, bin), suffix (jr, iv, cpa), title (mr, pope), or initial (x, e.); true otherwise</returns>
-        private static bool IsRootname(string piece)
+        private bool IsRootname(string piece)
         {
-            var lcPiece = piece.ToLower().Replace(".", string.Empty);
+            var lcPiece = piece.ToLower().Trim('.');
 
-            return !Suffixes.Contains(lcPiece)
-                && !Prefixes.Contains(lcPiece)
-                && !Titles.Contains(lcPiece)
-                && !IsAnInitial(piece);
+            return !Prefixes.Contains(lcPiece)
+                   && !Suffixes.Contains(lcPiece)
+                   && !SuffixesNotAcronyms.Contains(lcPiece)
+                   && !CombinedSuffixesNotAcronyms.Contains(lcPiece)
+                   && !Titles.Contains(lcPiece)
+                   && !CombinedTitles.Contains(lcPiece)
+                   && !IsAnInitial(piece);
         }
 
         /// <summary>
         /// Words with a single period at the end, or a single uppercase letter.
         /// </summary>
         /// <param name="value"></param>
-        /// <returns>True iff <see cref="value"/> matches the regex "^[A-Za-z].?$"</returns>
+        /// <returns>True if <see cref="value"/> matches the regex "^(\w\.|[A-Z])?$"</returns>
         private static bool IsAnInitial(string value)
         {
-            if (string.IsNullOrEmpty(value) || value.Length > 2)
-            {
-                return false;
-            }
-
-            return char.IsLetter(value[0]) && (value.Length == 1 || value[1] == '.');
+            return RegexInitial.IsMatch(value);
         }
+
         #endregion
 
         #region full name parser
+
+        /// <summary>
+        /// Collapse multiple spaces into single space
+        /// </summary>
+        private static void CollapseWhitespace(ref string value)
+        {
+            value = RegexSpaces.Replace(value.Trim(), " ");
+            if (value.EndsWith(","))
+                value = value[..^1];
+        }
+
         /// <summary>
         /// If there are only two parts and one is a title, assume it's a last name
         /// instead of a first name. e.g. Mr. Johnson. Unless it's a special title
@@ -242,7 +275,7 @@ namespace NameParser
         private void PostProcessFirstnames()
         {
             if (!string.IsNullOrEmpty(Title)
-                && !FirstNameTitles.Contains(Title.ToLower().Replace(".", string.Empty))
+                && !FirstNameTitles.Contains(Title.ToLower())
                 && 1 == _FirstList.Count + _LastList.Count)
             {
                 if (_FirstList.Any())
@@ -287,7 +320,6 @@ namespace NameParser
             }
             else
             {
-
                 _LastPrefixList = words.Take(prefixCount).ToList();
             }
 
@@ -337,9 +369,9 @@ namespace NameParser
                 {
                     var split = _FullName.IndexOf('&');
 
-                    var primary = _FullName.Substring(0, split);
+                    var primary = _FullName[..split];
 
-                    var secondary = _FullName.Substring(split + 1);
+                    var secondary = _FullName[(split + 1)..];
                     AdditionalName = new HumanName(secondary);
 
                     _FullName = primary;
@@ -348,16 +380,20 @@ namespace NameParser
                 {
                     var split = _FullName.IndexOf(" and ", StringComparison.InvariantCultureIgnoreCase);
 
-                    var primary = _FullName.Substring(0, split);
+                    var primary = _FullName[..split];
 
-                    var secondary = _FullName.Substring(split + 5 /* length of " and " */);
+                    var secondary = _FullName[(split + 5)..];
                     AdditionalName = new HumanName(secondary);
 
                     _FullName = primary;
                 }
             }
 
+            // Pre-process
+            FixPhd(ref _FullName);
             ParseNicknames(ref _FullName, out _NicknameList);
+
+            CollapseWhitespace(ref _FullName);
 
             // break up fullName by commas
             var parts = _FullName
@@ -383,27 +419,25 @@ namespace NameParser
                     var nxt = i == pieces.Length - 1 ? string.Empty : pieces[i + 1];
 
                     // title must have a next piece, unless it's just a title
-                    if (IsTitle(piece) && (!string.IsNullOrEmpty(nxt) || pieces.Length == 1))
+                    if (!this._FirstList.Any())
                     {
-                        // some last names appear as titles (https://github.com/aeshirey/NameParserSharp/issues/9)
-                        // if we've already parsed out titles, first, or middle names, something appearing as a title may in fact be a last name
-                        if (_FirstList.Count > 0 || _MiddleList.Count > 0)
+                        if ((!string.IsNullOrEmpty(nxt) || pieces.Length == 1) && IsTitle(piece))
+                        {
+                            _TitleList.Add(piece);
+                        }
+                        else if (pieces.Length == 1 && this._NicknameList.Any())
                         {
                             _LastList.Add(piece);
                         }
                         else
                         {
-                            _TitleList.Add(piece);
+                            _FirstList.Add(piece);
                         }
                     }
-                    else if (string.IsNullOrEmpty(First))
-                    {
-                        _FirstList.Add(piece);
-                    }
-                    else if (AreSuffixes(pieces.Skip(i + 1)))
+                    else if (AreSuffixes(pieces.Skip(i + 1)) || (IsRomanNumeral(nxt) && i == (pieces.Length - 2) && !IsAnInitial(piece)))
                     {
                         _LastList.Add(piece);
-                        _SuffixList = _SuffixList.Concat(pieces.Skip(i + 1)).ToList();
+                        _SuffixList.AddRange(pieces.Skip(i + 1));
                         break;
                     }
                     else if (!string.IsNullOrEmpty(nxt))
@@ -434,26 +468,26 @@ namespace NameParser
                     }
                 }
             }
-            else if (AreSuffixes(parts[1].Split(' ')))
+            else if (AreSuffixes(parts[1].Split(' ')) && parts[0].Split(' ').Length > 1)
             {
                 // suffix comma: title first middle last [suffix], suffix [suffix] [, suffix]
                 //               parts[0],                         parts[1:...]
-                _SuffixList = _SuffixList.Concat(parts.Skip(1)).ToList();
-                var pieces = ParsePieces(parts[0].Split(new[] { ' ' }));
+                _SuffixList.AddRange(parts.Skip(1));
+                var pieces = ParsePieces(parts[0].Split([' ']));
 
                 for (var i = 0; i < pieces.Length; i++)
                 {
                     var piece = pieces[i];
                     var nxt = i == pieces.Length - 1 ? string.Empty : pieces[i + 1];
 
-                    if (IsTitle(piece) && (!string.IsNullOrEmpty(nxt) || pieces.Length == 1))
-                    {
-                        _TitleList.Add(piece);
-                        continue;
-                    }
-
                     if (string.IsNullOrEmpty(First))
                     {
+                        if ((!string.IsNullOrEmpty(nxt) || pieces.Length == 1) && IsTitle(piece))
+                        {
+                            _TitleList.Add(piece);
+                            continue;
+                        }
+
                         _FirstList.Add(piece);
                         continue;
                     }
@@ -461,7 +495,7 @@ namespace NameParser
                     if (AreSuffixes(pieces.Skip(i + 1)))
                     {
                         _LastList.Add(piece);
-                        _SuffixList = pieces.Skip(i + 1).Concat(_SuffixList).ToList();
+                        _SuffixList.InsertRange(0, pieces.Skip(i + 1));
                         break;
                     }
 
@@ -499,9 +533,8 @@ namespace NameParser
 
                 foreach (var piece in lastnamePieces)
                 {
-
                     // the first one is always a last name, even if it look like a suffix
-                    if (IsSuffix(piece) && _LastList.Any())
+                    if (_LastList.Any() && IsSuffix(piece))
                     {
                         _SuffixList.Add(piece);
                     }
@@ -516,13 +549,16 @@ namespace NameParser
                     var piece = pieces[i];
                     var nxt = i == pieces.Length - 1 ? string.Empty : pieces[i + 1];
 
-                    if (IsTitle(piece) && (!string.IsNullOrEmpty(nxt) || pieces.Length == 1))
+                    if (!_FirstList.Any())
                     {
-                        _TitleList.Add(piece);
-                    }
-                    else if (string.IsNullOrEmpty(First))
-                    {
-                        _FirstList.Add(piece);
+                        if ((!string.IsNullOrEmpty(nxt) || pieces.Length == 1) && IsTitle(piece))
+                        {
+                            _TitleList.Add(piece);
+                        }
+                        else
+                        {
+                            _FirstList.Add(piece);
+                        }
                     }
                     else if (IsSuffix(piece))
                     {
@@ -533,56 +569,52 @@ namespace NameParser
                         _MiddleList.Add(piece);
                     }
                 }
-                if (parts.Count() >= 3 && !string.IsNullOrEmpty(parts[2]))
+
+                if (parts.Count >= 3 && parts.Skip(2).Any(p => !string.IsNullOrEmpty(p)))
                 {
-                    _SuffixList = _SuffixList.Concat(parts.Skip(2)).ToList();
+                    _SuffixList.AddRange(parts.Skip(2).Where(p => !string.IsNullOrEmpty(p)));
                 }
             }
 
             IsUnparsable = !_TitleList.Any()
-                         && !_FirstList.Any()
-                         && !_MiddleList.Any()
-                         && !_LastList.Any()
-                         && !_SuffixList.Any()
-                         && !_NicknameList.Any();
+                           && !_FirstList.Any()
+                           && !_MiddleList.Any()
+                           && !_LastList.Any()
+                           && !_SuffixList.Any()
+                           && !_NicknameList.Any();
 
             PostProcessFirstnames();
             PostProcessLastname();
             PostProcessAdditionalName();
         }
 
+        private void FixPhd(ref string fullName)
+        {
+            var match = RegexPhd.Match(fullName);
+            if (match.Success)
+            {
+                _SuffixList.Add(match.Groups[1].Value);
+                fullName = RegexPhd.Replace(fullName, string.Empty);
+            }
+        }
+
         private static void ParseNicknames(ref string fullName, out IList<string> nicknameList)
         {
-            // this regex is an improvement upon the original in that it adds apostrophes and appropriately captures 
-            // the nicknames in "john 'jack' kennedy", "richard (dick) nixon" and @"william ""bill"" clinton".
-            // it also doesn't try to parse out improperly matched inputs that the python version would have such as 
-            // @"john (j"" jones", @"samuel (sammy"" samsonite" 
-
-            // https://code.google.com/p/python-nameparser/issues/detail?id=33
-            var nicknameRegex = new Regex(@"\s*(?:\((.+?)\))|(?:([""'])(.+?)\2)");
             nicknameList = new List<string>();
 
-            var match = nicknameRegex.Match(fullName);
-
-            var nicknameFound = false;
-            while (match.Success && match.Groups[0].Value.Length > 0)
+            foreach (var regex in new[] { RegexQuotedWord, RegexDoubleQuotes, RegexParenthesis })
             {
-                nicknameFound = true;
+                var match = regex.Match(fullName);
+                while (match.Success && match.Groups[0].Value.Length > 0)
+                {
+                    // remove from the full name the nickname plus its identifying boundary (parens or quotes)
+                    fullName = fullName.Replace(match.Value, string.Empty);
 
-                // remove from the full name the nickname plus its identifying boundary (parens or quotes)
-                fullName = fullName.Replace(match.Groups[0].Value, string.Empty);
+                    // keep only the nickname part
+                    nicknameList.Add(match.Groups[1].Value);
 
-                // keep only the nickname part
-                var matchGroup = match.Groups[0].Value.TrimStart().StartsWith("(") ? 1 : 3; // which regex group was used: 1 is for parens; 3 is single- or double-quoted nicknames
-                nicknameList.Add(match.Groups[matchGroup].Value);
-
-                match = nicknameRegex.Match(fullName);
-            }
-
-            // normalize whitespace
-            if (nicknameFound)
-            {
-                fullName = string.Join(" ", fullName.Split(new[] { " " }, StringSplitOptions.RemoveEmptyEntries));
+                    match = regex.Match(fullName);
+                }
             }
         }
 
@@ -592,39 +624,120 @@ namespace NameParser
         /// <param name="parts">name part strings from the comma split</param>
         /// <param name="additionalPartsCount"></param>
         /// <returns>pieces split on spaces and joined on conjunctions</returns>
-        protected static string[] ParsePieces(IEnumerable<string> parts, int additionalPartsCount = 0)
+        protected string[] ParsePieces(IEnumerable<string> parts, int additionalPartsCount = 0)
         {
-            var tmp = new List<string>();
+            var output = new List<string>();
             foreach (var part in parts)
             {
-                tmp.AddRange(part.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries).Select(s => s.Trim(',')));
+                output.AddRange(part.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries).Select(s => s.Trim(',')));
             }
 
-            return joinOnConjunctions(tmp, additionalPartsCount);
+            // If part contains periods, check if it's multiple titles or suffixes
+            // together without spaces if so, add the new part with periods to the
+            // constants so they get parsed correctly later
+            foreach (var part in output)
+            {
+                // if this part has a period not at the beginning or end
+                if (RegexPeriodNotAtEnd.IsMatch(part))
+                {
+                    // split on periods, any of the split pieces titles or suffixes?
+                    // ("Lt.Gov.")
+                    var periodChunks = part.Split('.');
+
+                    // add the part to the constant so it will be found
+                    if (periodChunks.Any(IsTitle))
+                    {
+                        //if (ReferenceEquals(Titles, DefaultTitles))
+                        //    Titles = new HashSet<string>(DefaultTitles);
+                        CombinedTitles.Add(part.ToLower().Trim('.'));
+                    }
+                    else if (periodChunks.Any(IsSuffix))
+                    {
+                        //if (ReferenceEquals(SuffixesNotAcronyms, DefaultSuffixesNotAcronyms))
+                        //    SuffixesNotAcronyms = new HashSet<string>(DefaultSuffixesNotAcronyms);
+                        CombinedSuffixesNotAcronyms.Add(part.ToLower().Trim('.'));
+                    }
+                }
+            }
+
+
+            return joinOnConjunctions(output, additionalPartsCount);
         }
 
         /// <summary>
-        /// join conjunctions to surrounding pieces, e.g.:
-        ///    ['Mr. and Mrs.'], ['King of the Hill'], ['Jack and Jill'], ['Velasquez y Garcia']
+        /// Join conjunctions to surrounding pieces. Title- and prefix-aware. e.g.:
+        ///
+        ///     ['Mr.', 'and'. 'Mrs.', 'John', 'Doe'] ==>
+        ///                     ['Mr. and Mrs.', 'John', 'Doe']
+        ///
+        ///     ['The', 'Secretary', 'of', 'State', 'Hillary', 'Clinton'] ==>
+        ///                     ['The Secretary of State', 'Hillary', 'Clinton']
         /// </summary>
+        /// <remarks>
+        /// When joining titles, saves newly formed piece to the instance's titles
+        /// constant so they will be parsed correctly later. E.g. after parsing the
+        /// example names above, 'The Secretary of State' and 'Mr. and Mrs.' would
+        /// be present in the titles constant set.
+        /// </remarks>
         /// <param name="pieces">name pieces strings after split on spaces</param>
         /// <param name="additionalPartsCount"></param>
         /// <returns>new list with piece next to conjunctions merged into one piece with spaces in it.</returns>
-        internal static string[] joinOnConjunctions(List<string> pieces, int additionalPartsCount = 0)
+        internal string[] joinOnConjunctions(IReadOnlyList<string> pieces, int additionalPartsCount = 0)
         {
             var length = pieces.Count() + additionalPartsCount;
 
             // don't join on conjuctions if there are only 2 parts
             if (length < 3)
-            {
                 return pieces.ToArray();
+
+            var rootnamePieces = pieces.Where(IsRootname).ToArray();
+            var totalLength = rootnamePieces.Length + additionalPartsCount;
+
+            
+            // find all the conjunctions, join any conjunctions that are next to each
+            // other, then join those newly joined conjunctions and any single
+            // conjunctions to the piece before and after it
+            var conjunctionIndexes = new List<int>();
+            for (var i = 0; i < pieces.Count; i++)
+                if (IsConjunction(pieces[i]))
+                    conjunctionIndexes.Add(i);
+
+            var contiguousConjunctionIndexRanges = conjunctionIndexes.ConsecutiveRanges();
+            
+            var editablePieces = new List<string>(pieces);
+            var toDelete = new List<int>(length);
+            foreach (var (first, last) in contiguousConjunctionIndexRanges)
+            {
+                if (first == last) continue;
+                var newPiece = string.Join(" ", editablePieces.Skip(first).Take(last - first + 1));
+                toDelete.AddRange(Enumerable.Range(first + 1, last - first));
+                editablePieces[first] = newPiece;
+                CombinedConjunctions.Add(newPiece.ToLower());
             }
 
-            foreach (var conj in pieces.Where(IsConjunction).Reverse())
+            toDelete.Reverse();
+
+            foreach(var i in toDelete)
             {
+                editablePieces.RemoveAt(i);
+            }
+
+            if (editablePieces.Count == 1)
+            {
+                return editablePieces.ToArray();
+            }
+
+            conjunctionIndexes = new List<int>();
+            for (var i = 0; i < editablePieces.Count; i++)
+                if (IsConjunction(editablePieces[i]))
+                    conjunctionIndexes.Add(i);
+
+            for (var n = 0; n < conjunctionIndexes.Count; n++)
+            {
+                var i = conjunctionIndexes[n];
                 // loop through the pieces backwards, starting at the end of the list.
                 // Join conjunctions to the pieces on either side of them.
-                if (conj.Length == 1 && pieces.Count(IsRootname) < 4)
+                if (editablePieces[i].Length == 1 && totalLength < 4)
                 {
                     // if there are only 3 total parts (minus known titles, suffixes and prefixes) 
                     // and this conjunction is a single letter, prefer treating it as an initial
@@ -633,93 +746,113 @@ namespace NameParser
                     continue;
                 }
 
-                var index = pieces.IndexOf(conj);
-
-                if (index == -1)
+                if (i == 0)
                 {
-                    continue;
+                    var newPiece = string.Join(" ", editablePieces.Skip(i).Take(2));
+                    if (IsTitle(editablePieces[i + 1]))
+                    {
+                        //if (ReferenceEquals(Titles, DefaultTitles))
+                        //    Titles = new HashSet<string>(DefaultTitles);
+                        CombinedTitles.Add(newPiece.ToLower().Trim('.'));
+                    }
+
+                    editablePieces[i] = newPiece;
+                    editablePieces.RemoveAt(i + 1);
+
+                    for (var j = n + 1; j < conjunctionIndexes.Count; j++)
+                    {
+                        conjunctionIndexes[j] -= 1;
+                    }
                 }
-
-                if (index < pieces.Count() - 1)
+                else
                 {
-                    // if this is not the last piece
-                    string newPiece;
-                    if (index == 0)
+                    var newPiece = string.Join(" ", editablePieces.Skip(i - 1).Take(3));
+                    if (IsTitle(editablePieces[i - 1]))
                     {
-                        // if this is the first piece and it's a conjunction
-                        var nxt = pieces[index + 1];
-
-                        var cons = IsTitle(nxt) ? Conjunctions : Titles;
-                        newPiece = string.Join(" ", pieces.Take(2));
-                        cons.Add(newPiece);
-                        pieces[index] = newPiece;
-                        pieces.RemoveAt(index + 1);
-                        continue;
+                        //    if (ReferenceEquals(Titles, DefaultTitles))
+                        //        this.Titles = new HashSet<string>(DefaultTitles);
+                        CombinedTitles.Add(newPiece.ToLower().Trim('.'));
                     }
 
-                    if (IsConjunction(pieces[index - 1]))
+                    editablePieces[i - 1] = newPiece;
+                    editablePieces.RemoveAt(i);
+                    var removedCount = 1;
+                    if (editablePieces.Count > i)
                     {
-                        // if the piece in front of this one is a conjunction too,
-                        // add new_piece (this conjuction and the following piece) 
-                        // to the conjuctions constant so that it is recognized
-                        // as a conjunction in the next loop. 
-                        // e.g. for ["Lord","of","the Universe"], put "the Universe"
-                        // into the conjunctions constant.
-
-                        newPiece = string.Join(" ", pieces.Skip(index).Take(2));
-                        Conjunctions.Add(newPiece);
-                        pieces[index] = newPiece;
-                        pieces.RemoveAt(index + 1);
-                        continue;
+                        editablePieces.RemoveAt(i);
+                        removedCount++;
                     }
 
-                    newPiece = string.Join(" ", pieces.Skip(index - 1).Take(3));
-
-                    if (IsTitle(pieces[index - 1]))
+                    for (var j = n + 1; j < conjunctionIndexes.Count; j++)
                     {
-                        // if the second name is a title, assume the first one is too and add the 
-                        // two titles with the conjunction between them to the titles constant 
-                        // so the combo we just created gets parsed as a title. 
-                        // e.g. "Mr. and Mrs." becomes a title.
-                        Titles.Add(newPiece);
+                        conjunctionIndexes[j] -= removedCount;
                     }
-
-                    pieces[index - 1] = newPiece;
-                    pieces.RemoveAt(index);
-                    pieces.RemoveAt(index);
                 }
             }
 
             // join prefixes to following lastnames: ['de la Vega'], ['van Buren']
             // skip first part to avoid counting it as a prefix, e.g. "van" is either a first name or a preposition depending on its position
-            var prefixes = pieces.Skip(1).Where(IsPrefix).ToArray();
+            var prefixes = editablePieces.Where(IsPrefix).ToArray();
             if (prefixes.Length > 0)
             {
-                var i = pieces.IndexOf(prefixes[0]);
-                // join everything after the prefix until the next suffix
-                var nextSuffix = pieces.Skip(i).Where(IsSuffix).ToArray();
-
-                if (nextSuffix.Length > 0)
+                var i = 0;
+                foreach(var prefix in prefixes)
                 {
-                    var j = pieces.IndexOf(nextSuffix[0]);
-                    var newPiece = string.Join(" ", pieces.Skip(i).Take(j - i));
+                    var newI = editablePieces.IndexOf(prefix);
+                    if (newI != -1) i = newI;
+                    
+                    // If it's the first piece and there are more than 1 rootnames, assume it's a first name
+                    if (i == 0 && totalLength >= 1) continue;
 
-                    pieces = pieces
-                        .Take(i)
-                        .Concat(new[] { newPiece })
-                        .Concat(pieces.Skip(j))
-                        .ToList();
-                }
-                else
-                {
-                    var newPiece = string.Join(" ", pieces.Skip(i));
-                    pieces = pieces.Take(i).ToList();
-                    pieces.Add(newPiece);
+                    var matchPrefix = false;
+                    for (var j = i + 1; j < editablePieces.Count; j++)
+                    {
+                        if (IsPrefix(editablePieces[j]))
+                        {
+                            matchPrefix = true;
+                            if (j == i + 1)
+                            {
+                                j++;
+                            }
+
+                            var newPiece = string.Join(" ", editablePieces.Skip(i).Take(j - i));
+                            editablePieces = editablePieces
+                                .Take(i)
+                                .Concat(new[] { newPiece })
+                                .Concat(editablePieces.Skip(j))
+                                .ToList();
+                            break;
+                        }
+                    }
+
+                    if(!matchPrefix){
+                        // join everything after the prefix until the next suffix
+                        var nextSuffix = editablePieces.Skip(i).Where(IsSuffix).ToArray();
+
+                        if (nextSuffix.Length > 0)
+                        {
+                            var j = editablePieces.IndexOf(nextSuffix[0]);
+                            var newPiece = string.Join(" ", editablePieces.Skip(i).Take(j - i));
+
+                            editablePieces = editablePieces
+                                .Take(i)
+                                .Concat(new[] { newPiece })
+                                .Concat(editablePieces.Skip(j))
+                                .ToList();
+                        }
+                        else
+                        {
+                            var newPiece = string.Join(" ", editablePieces.Skip(i));
+                            editablePieces = editablePieces.Take(i).ToList();
+                            editablePieces.Add(newPiece);
+                        }
+                    }
                 }
             }
 
-            return pieces.ToArray();
+            return editablePieces.ToArray();
         }
+
         #endregion
 
         #region Capitalization Support
@@ -727,10 +860,10 @@ namespace NameParser
         /// <summary>
         /// Capitalize a single word in a context-sensitive manner. Values such as "and", "der" and "bin" are unmodified, but "smith" -> "Smith", and "phd" -> "Ph.D."
         /// </summary>
-        private static string CapitalizeWord(string word)
+        private string CapitalizeWord(string word, string attribute)
         {
-            var wordLower = word.ToLower().Replace(".", string.Empty);
-            if (IsPrefix(word) || IsConjunction(word))
+            var wordLower = word.ToLower().Trim('.');
+            if ((IsPrefix(word) && attribute is "last" or "middle") || IsConjunction(word))
             {
                 return wordLower;
             }
@@ -742,13 +875,10 @@ namespace NameParser
             {
                 return exception.Item2;
             }
-
-            // special case: "macbeth" should be "MacBeth"; "mcbride" -> "McBride"
-            var macMatch = RegexMac.Match(word);
-            if (macMatch.Success)
-            {
-                return ToTitleCase(macMatch.Groups[1].Value) + ToTitleCase(macMatch.Groups[2].Value);
-            }
+            
+            if (RegexMac.IsMatch(word))
+                // special case: "macbeth" should be "MacBeth"; "mcbride" -> "McBride"
+                return RegexMac.Replace(word, m => ToTitleCase(m.Groups[1].Value) + ToTitleCase(m.Groups[2].Value));
 
             return ToTitleCase(word);
         }
@@ -760,34 +890,37 @@ namespace NameParser
                 return string.Empty;
             }
 
-            return s.Substring(0, 1).ToUpper() + s.Substring(1).ToLower();
+            return s[..1].ToUpper() + s[1..].ToLower();
         }
 
-        private static string CapitalizePiece(string piece)
+        private string CapitalizePiece(string piece, string attribute)
         {
-            return string.Join(" ", piece.Split(new[] { " " }, StringSplitOptions.RemoveEmptyEntries).Select(CapitalizeWord));
+            return RegexWord.Replace(piece, m => CapitalizeWord(m.Value, attribute));
         }
 
         /// <summary>
-        /// Attempt to normalize the input values in a human-readable way. For example, "juan de garcia" would normalize to "Juan de Garcia"
+        /// Attempt to normalize the input values in a human-readable way.
+        /// By default, it will not adjust the case of names entered in mixed case.
+        /// To run capitalization on all names pass the parameter `force=True`.
+        /// For example, "juan de garcia" would normalize to "Juan de Garcia"
         /// </summary>
-        public void Normalize()
+        public void Normalize(bool? force = null)
         {
-            _TitleList = _TitleList.Select(CapitalizePiece).ToList();
-            _FirstList = _FirstList.Select(CapitalizePiece).ToList();
-            _MiddleList = _MiddleList.Select(CapitalizePiece).ToList();
-            _LastList = _LastList.Select(CapitalizePiece).ToList(); // CapitalizePiece recognizes prefixes, so its okay to normalize "van der waals" like this
-            _SuffixList = _SuffixList.Select(CapitalizePiece).ToList();
-            _NicknameList = _NicknameList.Select(CapitalizePiece).ToList();
-            _LastBaseList = _LastBaseList.Select(CapitalizePiece).ToList();
+            var name = FullName;
+            if (force != true && !(name == name.ToUpper() || name == name.ToLower()))
+                return;
+
+            _TitleList = _TitleList.Select(t => CapitalizePiece(t, "title")).ToList();
+            _FirstList = _FirstList.Select(t => CapitalizePiece(t, "first")).ToList();
+            _MiddleList = _MiddleList.Select(t => CapitalizePiece(t, "middle")).ToList();
+            _LastList = _LastList.Select(t => CapitalizePiece(t, "last"))
+                .ToList(); // CapitalizePiece recognizes prefixes, so its okay to normalize "van der waals" like this
+            _SuffixList = _SuffixList.Select(t => CapitalizePiece(t, "suffix")).ToList();
+            _NicknameList = _NicknameList.Select(t => CapitalizePiece(t, "nickname")).ToList();
+            _LastBaseList = _LastBaseList.Select(t => CapitalizePiece(t, "last")).ToList();
             // normalizing _LastPrefixList would effectively be a no-op, so don't bother calling it
-
-            var fullNamePieces = _FullName
-                .Split(new[] { " " }, StringSplitOptions.RemoveEmptyEntries)
-                .Select(CapitalizePiece);
-
-            _FullName = string.Join(" ", fullNamePieces);
         }
+
         #endregion
     }
 }
