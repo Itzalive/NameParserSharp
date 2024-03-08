@@ -1,6 +1,6 @@
 # NameParserSharp
 
-Based upon [nameparser 0.36](https://pypi.python.org/pypi/nameparser), NameParserSharp is a C# library that parses a human name into constituent fields `Title`, `First`, `Middle`, `Last`, `Suffix`, and `Nickname` from the `HumanName` class. For example:
+Based upon [nameparser 1.1.3](https://pypi.python.org/pypi/nameparser), NameParserSharp is a C# library that parses a human name into constituent fields `Title`, `First`, `Middle`, `Last`, `Suffix`, and `Nickname` from the `HumanName` class. For example:
 
 ```c#
 var jfk = new HumanName("president john 'jack' f kennedy");
@@ -16,11 +16,6 @@ var jfk_alt = new HumanName("kennedy, president john (jack) f");
 Assert.IsTrue(jfk == jfk_alt);
 ```
 
-NameParserSharp implements the functionality of the Python project on which it is based in a C# idiomatic way. It also,
-
-* eliminates nearly all regular expressions for efficiency
-* adds unit tests
-* improves nickname handling to expand delimiters: `John (Jack) Torrence` == `John 'Jack' Torrence` == `John "Jack" Torrence`
-* parses out multiple names from a single string as you might expect, as in `mr john and mrs jane doe`
+NameParserSharp implements the functionality of the Python project on which it is based in a C# idiomatic way.
 
 NameParserSharp is available as a NuGet package: `Install-Package NameParserSharp`
