@@ -644,14 +644,10 @@ namespace NameParser
                     // add the part to the constant so it will be found
                     if (periodChunks.Any(IsTitle))
                     {
-                        //if (ReferenceEquals(Titles, DefaultTitles))
-                        //    Titles = new HashSet<string>(DefaultTitles);
                         CombinedTitles.Add(part.ToLower().Trim('.'));
                     }
                     else if (periodChunks.Any(IsSuffix))
                     {
-                        //if (ReferenceEquals(SuffixesNotAcronyms, DefaultSuffixesNotAcronyms))
-                        //    SuffixesNotAcronyms = new HashSet<string>(DefaultSuffixesNotAcronyms);
                         CombinedSuffixesNotAcronyms.Add(part.ToLower().Trim('.'));
                     }
                 }
@@ -748,8 +744,6 @@ namespace NameParser
                     var newPiece = string.Join(" ", editablePieces.Skip(i).Take(2));
                     if (IsTitle(editablePieces[i + 1]))
                     {
-                        //if (ReferenceEquals(Titles, DefaultTitles))
-                        //    Titles = new HashSet<string>(DefaultTitles);
                         CombinedTitles.Add(newPiece.ToLower().Trim('.'));
                     }
 
@@ -766,8 +760,6 @@ namespace NameParser
                     var newPiece = string.Join(" ", editablePieces.Skip(i - 1).Take(3));
                     if (IsTitle(editablePieces[i - 1]))
                     {
-                        //    if (ReferenceEquals(Titles, DefaultTitles))
-                        //        this.Titles = new HashSet<string>(DefaultTitles);
                         CombinedTitles.Add(newPiece.ToLower().Trim('.'));
                     }
 
