@@ -1,10 +1,10 @@
-﻿using System.Collections.Concurrent;
-
-namespace NameParser
+﻿namespace NameParser
 {
     using System;
+    using System.Collections.Concurrent;
     using System.Collections.Generic;
     using System.Text.RegularExpressions;
+
 
     public partial class HumanName
     {

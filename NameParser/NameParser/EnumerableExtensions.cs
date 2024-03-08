@@ -1,8 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
+﻿namespace NameParser
+{
+    using System;
+    using System.Collections.Generic;
 
-namespace NameParser {
-    internal static class EnumerableExtensions {
+    internal static class EnumerableExtensions
+    {
         public static IEnumerable<(int First, int Last)> ConsecutiveRanges(this IEnumerable<int> source)
         {
             using (var e = source.GetEnumerator())

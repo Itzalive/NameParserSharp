@@ -1,9 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
+﻿
 namespace NameParser
 {
+    using System;
+
     [Flags]
     public enum Prefer
     {
