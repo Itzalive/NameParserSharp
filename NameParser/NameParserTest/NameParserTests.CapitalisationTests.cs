@@ -9,7 +9,7 @@ public partial class NameParserTests
     public class CapitalizationTests
     {
         [TestMethod]
-        public void test_capitalization_exception_for_III()
+        public void TestCapitalizationExceptionForIii()
         {
             var hn = new HumanName("juan q. xavier velasquez y garcia iii");
             hn.Normalize();
@@ -20,7 +20,7 @@ public partial class NameParserTests
         // http://code.google.com/p/python-nameparser/issues/detail?id=22
         [Ignore("Expected failure")]
         [TestMethod]
-        public void test_capitalization_exception_for_already_capitalized_III_KNOWN_FAILURE()
+        public void TestCapitalizationExceptionForAlreadyCapitalizedIiiknownfailure()
         {
             var hn = new HumanName("juan garcia III");
             hn.Normalize();
@@ -28,7 +28,7 @@ public partial class NameParserTests
         }
 
         [TestMethod]
-        public void test_capitalize_title()
+        public void TestCapitalizeTitle()
         {
             var hn = new HumanName("lt. gen. john a. kenneth doe iv");
             hn.Normalize();
@@ -36,7 +36,7 @@ public partial class NameParserTests
         }
 
         [TestMethod]
-        public void test_capitalize_title_to_lower()
+        public void TestCapitalizeTitleToLower()
         {
             var hn = new HumanName("LT. GEN. JOHN A. KENNETH DOE IV");
             hn.Normalize();
@@ -45,7 +45,7 @@ public partial class NameParserTests
 
         // Capitalization with M(a)c and hyphenated names
         [TestMethod]
-        public void test_capitalization_with_Mac_as_hyphenated_names()
+        public void TestCapitalizationWithMacAsHyphenatedNames()
         {
             var hn = new HumanName("donovan mcnabb-smith");
             hn.Normalize();
@@ -53,7 +53,7 @@ public partial class NameParserTests
         }
 
         [TestMethod]
-        public void test_capitization_middle_initial_is_also_a_conjunction()
+        public void TestCapitizationMiddleInitialIsAlsoAConjunction()
         {
             var hn = new HumanName("scott e. werner");
             hn.Normalize();
@@ -62,7 +62,7 @@ public partial class NameParserTests
 
         // Leaving already-capitalized names alone
         [TestMethod]
-        public void test_no_change_to_mixed_chase()
+        public void TestNoChangeToMixedChase()
         {
             var hn = new HumanName("Shirley Maclaine");
             hn.Normalize();
@@ -70,7 +70,7 @@ public partial class NameParserTests
         }
 
         [TestMethod]
-        public void test_force_capitalization()
+        public void TestForceCapitalization()
         {
             var hn = new HumanName("Shirley Maclaine");
             hn.Normalize(true);
@@ -78,7 +78,7 @@ public partial class NameParserTests
         }
 
         [TestMethod]
-        public void test_capitalize_diacritics()
+        public void TestCapitalizeDiacritics()
         {
             var hn = new HumanName("matthëus schmidt");
             hn.Normalize();
@@ -87,7 +87,7 @@ public partial class NameParserTests
 
         // http://code.google.com/p/python-nameparser/issues/detail?id=15
         [TestMethod]
-        public void test_downcasing_mac()
+        public void TestDowncasingMac()
         {
             var hn = new HumanName("RONALD MACDONALD");
             hn.Normalize();
@@ -96,7 +96,7 @@ public partial class NameParserTests
 
         // http://code.google.com/p/python-nameparser/issues/detail?id=23
         [TestMethod]
-        public void test_downcasing_mc()
+        public void TestDowncasingMc()
         {
             var hn = new HumanName("RONALD MCDONALD");
             hn.Normalize();
@@ -104,7 +104,7 @@ public partial class NameParserTests
         }
 
         [TestMethod]
-        public void test_short_names_with_mac()
+        public void TestShortNamesWithMac()
         {
             var hn = new HumanName("mack johnson");
             hn.Normalize();
@@ -112,7 +112,7 @@ public partial class NameParserTests
         }
 
         [TestMethod]
-        public void test_portuguese_prefixes()
+        public void TestPortuguesePrefixes()
         {
             var hn = new HumanName("joao da silva do amaral de souza");
             hn.Normalize();
@@ -120,7 +120,7 @@ public partial class NameParserTests
         }
 
         [TestMethod]
-        public void test_capitalize_prefix_clash_on_first_name()
+        public void TestCapitalizePrefixClashOnFirstName()
         {
             var hn = new HumanName("van nguyen");
             hn.Normalize();

@@ -186,7 +186,7 @@ public partial class NameParserTests
         }
 
         [TestMethod]
-        public void Test19_2()
+        public void Test192()
         {
             var hn = new HumanName("Dr P Forrest");
             Assert.AreEqual("P", hn.First);

@@ -10,7 +10,7 @@ public partial class NameParserTests
     {
         // Last name with conjunction
         [TestMethod]
-        public void test_last_name_with_conjunction()
+        public void TestLastNameWithConjunction()
         {
             var hn = new HumanName("Jose Aznar y Lopez");
             Assert.AreEqual("Jose", hn.First);
@@ -18,21 +18,21 @@ public partial class NameParserTests
         }
 
         [TestMethod]
-        public void test_multiple_conjunctions()
+        public void TestMultipleConjunctions()
         {
             var hn = new HumanName("part1 of The part2 of the part3 and part4");
             Assert.AreEqual("part1 of The part2 of the part3 and part4", hn.First);
         }
 
         [TestMethod]
-        public void test_multiple_conjunctions2()
+        public void TestMultipleConjunctions2()
         {
             var hn = new HumanName("part1 of and The part2 of the part3 And part4");
             Assert.AreEqual("part1 of and The part2 of the part3 And part4", hn.First);
         }
 
         [TestMethod]
-        public void test_ends_with_conjunction()
+        public void TestEndsWithConjunction()
         {
             var hn = new HumanName("Jon Dough and");
             Assert.AreEqual("Jon", hn.First);
@@ -40,7 +40,7 @@ public partial class NameParserTests
         }
 
         [TestMethod]
-        public void test_ends_with_two_conjunctions()
+        public void TestEndsWithTwoConjunctions()
         {
             var hn = new HumanName("Jon Dough and of");
             Assert.AreEqual("Jon", hn.First);
@@ -48,7 +48,7 @@ public partial class NameParserTests
         }
 
         [TestMethod]
-        public void test_starts_with_conjunction()
+        public void TestStartsWithConjunction()
         {
             var hn = new HumanName("and Jon Dough");
             Assert.AreEqual("and Jon", hn.First);
@@ -56,7 +56,7 @@ public partial class NameParserTests
         }
 
         [TestMethod]
-        public void test_starts_with_two_conjunctions()
+        public void TestStartsWithTwoConjunctions()
         {
             var hn = new HumanName("the and Jon Dough");
             Assert.AreEqual("the and Jon", hn.First);
@@ -65,7 +65,7 @@ public partial class NameParserTests
 
         // Potential conjunction/prefix treated as initial (because uppercase);
         [TestMethod]
-        public void test_uppercase_middle_initial_conflict_with_conjunction()
+        public void TestUppercaseMiddleInitialConflictWithConjunction()
         {
             var hn = new HumanName("John E Smith");
             Assert.AreEqual("John", hn.First);
@@ -74,7 +74,7 @@ public partial class NameParserTests
         }
 
         [TestMethod]
-        public void test_lowercase_middle_initial_with_period_conflict_with_conjunction()
+        public void TestLowercaseMiddleInitialWithPeriodConflictWithConjunction()
         {
             var hn = new HumanName("john e. smith");
             Assert.AreEqual("john", hn.First);
@@ -84,7 +84,7 @@ public partial class NameParserTests
 
         // The conjunction "e" can also be an initial
         [TestMethod]
-        public void test_lowercase_first_initial_conflict_with_conjunction()
+        public void TestLowercaseFirstInitialConflictWithConjunction()
         {
             var hn = new HumanName("e j smith");
             Assert.AreEqual("e", hn.First);
@@ -93,7 +93,7 @@ public partial class NameParserTests
         }
 
         [TestMethod]
-        public void test_lowercase_middle_initial_conflict_with_conjunction()
+        public void TestLowercaseMiddleInitialConflictWithConjunction()
         {
             var hn = new HumanName("John e Smith");
             Assert.AreEqual("John", hn.First);
@@ -102,7 +102,7 @@ public partial class NameParserTests
         }
 
         [TestMethod]
-        public void test_lowercase_middle_initial_and_suffix_conflict_with_conjunction()
+        public void TestLowercaseMiddleInitialAndSuffixConflictWithConjunction()
         {
             var hn = new HumanName("John e Smith, III");
             Assert.AreEqual("John", hn.First);
@@ -112,7 +112,7 @@ public partial class NameParserTests
         }
 
         [TestMethod]
-        public void test_lowercase_middle_initial_and_nocomma_suffix_conflict_with_conjunction()
+        public void TestLowercaseMiddleInitialAndNoCommaSuffixConflictWithConjunction()
         {
             var hn = new HumanName("John e Smith III");
             Assert.AreEqual("John", hn.First);
@@ -122,7 +122,7 @@ public partial class NameParserTests
         }
 
         [TestMethod]
-        public void test_lowercase_middle_initial_comma_lastname_and_suffix_conflict_with_conjunction()
+        public void TestLowercaseMiddleInitialCommaLastnameAndSuffixConflictWithConjunction()
         {
             var hn = new HumanName("Smith, John e, III, Jr");
             Assert.AreEqual("John", hn.First);
@@ -131,9 +131,9 @@ public partial class NameParserTests
             Assert.AreEqual("III, Jr", hn.Suffix);
         }
 
-[Ignore("Expected failure")]
+            [Ignore("Expected failure")]
         [TestMethod]
-        public void test_two_initials_conflict_with_conjunction()
+        public void TestTwoInitialsConflictWithConjunction()
         {
             // Supporting this seems to screw up titles with periods in them like M.B.A.
             var hn = new HumanName("E.T. Smith");
@@ -143,7 +143,7 @@ public partial class NameParserTests
         }
 
         [TestMethod]
-        public void test_couples_names()
+        public void TestCouplesNames()
         {
             var hn = new HumanName("John and Jane Smith");
             Assert.AreEqual("John and Jane", hn.First);
@@ -151,7 +151,7 @@ public partial class NameParserTests
         }
 
         [TestMethod]
-        public void test_couples_names_with_conjunction_lastname()
+        public void TestCouplesNamesWithConjunctionLastname()
         {
             var hn = new HumanName("John and Jane Aznar y Lopez");
             Assert.AreEqual("John and Jane", hn.First);
@@ -159,7 +159,7 @@ public partial class NameParserTests
         }
 
         [TestMethod]
-        public void test_couple_titles()
+        public void TestCoupleTitles()
         {
             var hn = new HumanName("Mr. and Mrs. John and Jane Smith");
             Assert.AreEqual("Mr. and Mrs.", hn.Title);
@@ -168,7 +168,7 @@ public partial class NameParserTests
         }
 
         [TestMethod]
-        public void test_title_with_three_part_name_last_initial_is_suffix_uppercase_no_period()
+        public void TestTitleWithThreePartNameLastInitialIsSuffixUppercaseNoPeriod()
         {
             var hn = new HumanName("King John Alexander V");
             Assert.AreEqual("King", hn.Title);
@@ -178,7 +178,7 @@ public partial class NameParserTests
         }
 
         [TestMethod]
-        public void test_four_name_parts_with_suffix_that_could_be_initial_lowercase_no_period()
+        public void TestFourNamePartsWithSuffixThatCouldBeInitialLowercaseNoPeriod()
         {
             var hn = new HumanName("larry james edward johnson v");
             Assert.AreEqual("larry", hn.First);
@@ -188,7 +188,7 @@ public partial class NameParserTests
         }
 
         [TestMethod]
-        public void test_four_name_parts_with_suffix_that_could_be_initial_uppercase_no_period()
+        public void TestFourNamePartsWithSuffixThatCouldBeInitialUppercaseNoPeriod()
         {
             var hn = new HumanName("Larry James Johnson I");
             Assert.AreEqual("Larry", hn.First);
@@ -198,7 +198,7 @@ public partial class NameParserTests
         }
 
         [TestMethod]
-        public void test_roman_numeral_initials()
+        public void TestRomanNumeralInitials()
         {
             var hn = new HumanName("Larry V I");
             Assert.AreEqual("Larry", hn.First);
@@ -209,7 +209,7 @@ public partial class NameParserTests
 
         // tests for Rev. title (Reverend);
         [TestMethod]
-        public void test124()
+        public void Test124()
         {
             var hn = new HumanName("Rev. John A. Kenneth Doe");
             Assert.AreEqual("Rev.", hn.Title);
@@ -219,7 +219,7 @@ public partial class NameParserTests
         }
 
         [TestMethod]
-        public void test125()
+        public void Test125()
         {
             var hn = new HumanName("Rev John A. Kenneth Doe");
             Assert.AreEqual("Rev", hn.Title);
@@ -229,7 +229,7 @@ public partial class NameParserTests
         }
 
         [TestMethod]
-        public void test126()
+        public void Test126()
         {
             var hn = new HumanName("Doe, Rev. John A. Jr.");
             Assert.AreEqual("Rev.", hn.Title);
@@ -240,7 +240,7 @@ public partial class NameParserTests
         }
 
         [TestMethod]
-        public void test127()
+        public void Test127()
         {
             var hn = new HumanName("Buca di Beppo");
             Assert.AreEqual("Buca", hn.First);
@@ -248,7 +248,7 @@ public partial class NameParserTests
         }
 
         [TestMethod]
-        public void test_le_as_last_name()
+        public void TestLeAsLastName()
         {
             var hn = new HumanName("Yin Le");
             Assert.AreEqual("Yin", hn.First);
@@ -256,7 +256,7 @@ public partial class NameParserTests
         }
 
         [TestMethod]
-        public void test_le_as_last_name_with_middle_initial()
+        public void TestLeAsLastNameWithMiddleInitial()
         {
             var hn = new HumanName("Yin a Le");
             Assert.AreEqual("Yin", hn.First);
@@ -265,16 +265,16 @@ public partial class NameParserTests
         }
 
         [TestMethod]
-        public void test_conjunction_in_an_address_with_a_title()
+        public void TestConjunctionInAnAddressWithATitle()
         {
             var hn = new HumanName("His Excellency Lord Duncan");
             Assert.AreEqual("His Excellency Lord", hn.Title);
             Assert.AreEqual("Duncan", hn.Last);
         }
 
-[Ignore("Expected failure")]
+        [Ignore("Expected failure")]
         [TestMethod]
-        public void test_conjunction_in_an_address_with_a_first_name_title()
+        public void TestConjunctionInAnAddressWithAFirstNameTitle()
         {
             var hn = new HumanName("Her Majesty Queen Elizabeth");
             Assert.AreEqual("Her Majesty Queen", hn.Title);
@@ -283,7 +283,7 @@ public partial class NameParserTests
         }
 
         [TestMethod]
-        public void test_name_is_conjunctions()
+        public void TestNameIsConjunctions()
         {
             var hn = new HumanName("e and e");
             Assert.AreEqual("e and e", hn.First);

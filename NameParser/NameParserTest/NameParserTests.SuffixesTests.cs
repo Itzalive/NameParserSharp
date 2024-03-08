@@ -9,7 +9,7 @@ public partial class NameParserTests
     public class SuffixesTestCase
     {
         [TestMethod]
-        public void test_suffix()
+        public void TestSuffix()
         {
             var hn = new HumanName("Joe Franklin Jr");
             Assert.AreEqual("Joe", hn.First);
@@ -18,7 +18,7 @@ public partial class NameParserTests
         }
 
         [TestMethod]
-        public void test_suffix_with_periods()
+        public void TestSuffixWithPeriods()
         {
             var hn = new HumanName("Joe Dentist D.D.S.");
             Assert.AreEqual("Joe", hn.First);
@@ -27,7 +27,7 @@ public partial class NameParserTests
         }
 
         [TestMethod]
-        public void test_two_suffixes()
+        public void TestTwoSuffixes()
         {
             var hn = new HumanName("Kenneth Clarke QC MP");
             Assert.AreEqual("Kenneth", hn.First);
@@ -38,7 +38,7 @@ public partial class NameParserTests
         }
 
         [TestMethod]
-        public void test_two_suffixes_lastname_comma_format()
+        public void TestTwoSuffixesLastnameCommaFormat()
         {
             var hn = new HumanName("Washington Jr. MD, Franklin");
             Assert.AreEqual("Franklin", hn.First);
@@ -48,7 +48,7 @@ public partial class NameParserTests
         }
 
         [TestMethod]
-        public void test_two_suffixes_suffix_comma_format()
+        public void TestTwoSuffixesSuffixCommaFormat()
         {
             var hn = new HumanName("Franklin Washington, Jr. MD");
             Assert.AreEqual("Franklin", hn.First);
@@ -57,7 +57,7 @@ public partial class NameParserTests
         }
 
         [TestMethod]
-        public void test_suffix_containing_periods()
+        public void TestSuffixContainingPeriods()
         {
             var hn = new HumanName("Kenneth Clarke Q.C.");
             Assert.AreEqual("Kenneth", hn.First);
@@ -66,7 +66,7 @@ public partial class NameParserTests
         }
 
         [TestMethod]
-        public void test_suffix_containing_periods_lastname_comma_format()
+        public void TestSuffixContainingPeriodsLastnameCommaFormat()
         {
             var hn = new HumanName("Clarke, Kenneth, Q.C. M.P.");
             Assert.AreEqual("Kenneth", hn.First);
@@ -75,7 +75,7 @@ public partial class NameParserTests
         }
 
         [TestMethod]
-        public void test_suffix_containing_periods_suffix_comma_format()
+        public void TestSuffixContainingPeriodsSuffixCommaFormat()
         {
             var hn = new HumanName("Kenneth Clarke Q.C., M.P.");
             Assert.AreEqual("Kenneth", hn.First);
@@ -84,7 +84,7 @@ public partial class NameParserTests
         }
 
         [TestMethod]
-        public void test_suffix_with_single_comma_format()
+        public void TestSuffixWithSingleCommaFormat()
         {
             var hn = new HumanName("John Doe jr., MD");
             Assert.AreEqual("John", hn.First);
@@ -93,7 +93,7 @@ public partial class NameParserTests
         }
 
         [TestMethod]
-        public void test_suffix_with_double_comma_format()
+        public void TestSuffixWithDoubleCommaFormat()
         {
             var hn = new HumanName("Doe, John jr., MD");
             Assert.AreEqual("John", hn.First);
@@ -102,7 +102,7 @@ public partial class NameParserTests
         }
 
         [TestMethod]
-        public void test_phd_with_erroneous_space()
+        public void TestPhdWithErroneousSpace()
         {
             var hn = new HumanName("John Smith, Ph. D.");
             Assert.AreEqual("John", hn.First);
@@ -111,7 +111,7 @@ public partial class NameParserTests
         }
 
         [TestMethod]
-        public void test_phd_conflict()
+        public void TestPhdConflict()
         {
             var hn = new HumanName("Adolph D");
             Assert.AreEqual("Adolph", hn.First);
@@ -121,7 +121,7 @@ public partial class NameParserTests
         }
 
         [TestMethod]
-        public void test_potential_suffix_that_is_also_last_name()
+        public void TestPotentialSuffixThatIsAlsoLastName()
         {
             var hn = new HumanName("Jack Ma");
             Assert.AreEqual("Jack", hn.First);
@@ -129,7 +129,7 @@ public partial class NameParserTests
         }
 
         [TestMethod]
-        public void test_potential_suffix_that_is_also_last_name_comma()
+        public void TestPotentialSuffixThatIsAlsoLastNameComma()
         {
             var hn = new HumanName("Ma, Jack");
             Assert.AreEqual("Jack", hn.First);
@@ -137,7 +137,7 @@ public partial class NameParserTests
         }
 
         [TestMethod]
-        public void test_potential_suffix_that_is_also_last_name_with_suffix()
+        public void TestPotentialSuffixThatIsAlsoLastNameWithSuffix()
         {
             var hn = new HumanName("Jack Ma Jr");
             Assert.AreEqual("Jack", hn.First);
@@ -146,7 +146,7 @@ public partial class NameParserTests
         }
 
         [TestMethod]
-        public void test_potential_suffix_that_is_also_last_name_with_suffix_comma()
+        public void TestPotentialSuffixThatIsAlsoLastNameWithSuffixComma()
         {
             var hn = new HumanName("Ma III, Jack Jr");
             Assert.AreEqual("Jack", hn.First);
@@ -157,7 +157,7 @@ public partial class NameParserTests
         // https://github.com/derek73/python-nameparser/issues/27
         [Ignore("Expected failure")]
         [TestMethod]
-        public void test_king()
+        public void TestKing()
         {
             var hn = new HumanName("Dr King Jr");
             Assert.AreEqual("Dr", hn.Title);
@@ -166,7 +166,7 @@ public partial class NameParserTests
         }
 
         [TestMethod]
-        public void test_multiple_letter_suffix_with_periods()
+        public void TestMultipleLetterSuffixWithPeriods()
         {
             var hn = new HumanName("John Doe Msc.Ed.");
             Assert.AreEqual("John", hn.First);
@@ -175,7 +175,7 @@ public partial class NameParserTests
         }
 
         [TestMethod]
-        public void test_suffix_with_periods_with_comma()
+        public void TestSuffixWithPeriodsWithComma()
         {
             var hn = new HumanName("John Doe, Msc.Ed.");
             Assert.AreEqual("John", hn.First);
@@ -184,7 +184,7 @@ public partial class NameParserTests
         }
 
         [TestMethod]
-        public void test_suffix_with_periods_with_lastname_comma()
+        public void TestSuffixWithPeriodsWithLastnameComma()
         {
             var hn = new HumanName("Doe, John Msc.Ed.");
             Assert.AreEqual("John", hn.First);

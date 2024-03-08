@@ -11,7 +11,7 @@ public partial class NameParserTests
     {
         // https://code.google.com/p/python-nameparser/issues/detail?id=33
         [TestMethod]
-        public void test_nickname_in_parenthesis()
+        public void TestNicknameInParenthesis()
         {
             var hn = new HumanName("Benjamin (Ben) Franklin");
             Assert.AreEqual("Benjamin", hn.First);
@@ -21,7 +21,7 @@ public partial class NameParserTests
         }
 
         [TestMethod]
-        public void test_two_word_nickname_in_parenthesis()
+        public void TestTwoWordNicknameInParenthesis()
         {
             var hn = new HumanName("Benjamin (Big Ben) Franklin");
             Assert.AreEqual("Benjamin", hn.First);
@@ -31,7 +31,7 @@ public partial class NameParserTests
         }
 
         [TestMethod]
-        public void test_two_words_in_quotes()
+        public void TestTwoWordsInQuotes()
         {
             var hn = new HumanName("Benjamin \"Big Ben\" Franklin");
             Assert.AreEqual("Benjamin", hn.First);
@@ -41,7 +41,7 @@ public partial class NameParserTests
         }
 
         [TestMethod]
-        public void test_nickname_in_parenthesis_with_comma()
+        public void TestNicknameInParenthesisWithComma()
         {
             var hn = new HumanName("Franklin, Benjamin (Ben)");
             Assert.AreEqual("Benjamin", hn.First);
@@ -51,7 +51,7 @@ public partial class NameParserTests
         }
 
         [TestMethod]
-        public void test_nickname_in_parenthesis_with_comma_and_suffix()
+        public void TestNicknameInParenthesisWithCommaAndSuffix()
         {
             var hn = new HumanName("Franklin, Benjamin (Ben), Jr.");
             Assert.AreEqual("Benjamin", hn.First);
@@ -62,7 +62,7 @@ public partial class NameParserTests
         }
 
         [TestMethod]
-        public void test_nickname_in_single_quotes()
+        public void TestNicknameInSingleQuotes()
         {
             var hn = new HumanName("Benjamin 'Ben' Franklin");
             Assert.AreEqual("Benjamin", hn.First);
@@ -72,7 +72,7 @@ public partial class NameParserTests
         }
 
         [TestMethod]
-        public void test_nickname_in_double_quotes()
+        public void TestNicknameInDoubleQuotes()
         {
             var hn = new HumanName("Benjamin \"Ben\" Franklin");
             Assert.AreEqual("Benjamin", hn.First);
@@ -82,7 +82,7 @@ public partial class NameParserTests
         }
 
         [TestMethod]
-        public void test_single_quotes_on_first_name_not_treated_as_nickname()
+        public void TestSingleQuotesOnFirstNameNotTreatedAsNickname()
         {
             var hn = new HumanName("Brian Andrew O'connor");
             Assert.AreEqual("Brian", hn.First);
@@ -92,7 +92,7 @@ public partial class NameParserTests
         }
 
         [TestMethod]
-        public void test_single_quotes_on_both_name_not_treated_as_nickname()
+        public void TestSingleQuotesOnBothNameNotTreatedAsNickname()
         {
             var hn = new HumanName("La'tanya O'connor");
             Assert.AreEqual("La'tanya", hn.First);
@@ -102,7 +102,7 @@ public partial class NameParserTests
         }
 
         [TestMethod]
-        public void test_single_quotes_on_end_of_last_name_not_treated_as_nickname()
+        public void TestSingleQuotesOnEndOfLastNameNotTreatedAsNickname()
         {
             var hn = new HumanName("Mari' Aube'");
             Assert.AreEqual("Mari'", hn.First);
@@ -112,7 +112,7 @@ public partial class NameParserTests
         }
 
         [TestMethod]
-        public void test_okina_inside_name_not_treated_as_nickname()
+        public void TestOkinaInsideNameNotTreatedAsNickname()
         {
             var hn = new HumanName("Harrieta Keōpūolani Nāhiʻenaʻena");
             Assert.AreEqual("Harrieta", hn.First);
@@ -122,7 +122,7 @@ public partial class NameParserTests
         }
 
         [TestMethod]
-        public void test_single_quotes_not_treated_as_nickname_Hawaiian_example()
+        public void TestSingleQuotesNotTreatedAsNicknameHawaiianExample()
         {
             var hn = new HumanName("Harietta Keopuolani Nahi'ena'ena");
             Assert.AreEqual("Harietta", hn.First);
@@ -132,7 +132,7 @@ public partial class NameParserTests
         }
 
         [TestMethod]
-        public void test_single_quotes_not_treated_as_nickname_Kenyan_example()
+        public void TestSingleQuotesNotTreatedAsNicknameKenyanExample()
         {
             var hn = new HumanName("Naomi Wambui Ng'ang'a");
             Assert.AreEqual("Naomi", hn.First);
@@ -142,7 +142,7 @@ public partial class NameParserTests
         }
 
         [TestMethod]
-        public void test_single_quotes_not_treated_as_nickname_Samoan_example()
+        public void TestSingleQuotesNotTreatedAsNicknameSamoanExample()
         {
             var hn = new HumanName("Va'apu'u Vitale");
             Assert.AreEqual("Va'apu'u", hn.First);
@@ -153,7 +153,7 @@ public partial class NameParserTests
 
         // http://code.google.com/p/python-nameparser/issues/detail?id=17
         [TestMethod]
-        public void test_parenthesis_are_removed_from_name()
+        public void TestParenthesisAreRemovedFromName()
         {
             var hn = new HumanName("John Jones (Unknown)");
             Assert.AreEqual("John", hn.First);
@@ -163,7 +163,7 @@ public partial class NameParserTests
         }
 
         [TestMethod]
-        public void test_duplicate_parenthesis_are_removed_from_name()
+        public void TestDuplicateParenthesisAreRemovedFromName()
         {
             var hn = new HumanName("John Jones (Google Docs), Jr. (Unknown)");
             Assert.AreEqual("John", hn.First);
@@ -172,7 +172,7 @@ public partial class NameParserTests
         }
 
         [TestMethod]
-        public void test_nickname_and_last_name()
+        public void TestNicknameAndLastName()
         {
             var hn = new HumanName("\"Rick\" Edmonds");
             Assert.AreEqual("", hn.First);
@@ -182,7 +182,7 @@ public partial class NameParserTests
 
         [Ignore("Expected failure")]
         [TestMethod]
-        public void test_nickname_and_last_name_with_title()
+        public void TestNicknameAndLastNameWithTitle()
         {
             var hn = new HumanName("Senator \"Rick\" Edmonds");
             Assert.AreEqual("Senator", hn.Title);

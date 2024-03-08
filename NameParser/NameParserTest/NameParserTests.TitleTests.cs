@@ -9,7 +9,7 @@ public partial class NameParserTests
     public class TitleTests
     {
         [TestMethod]
-        public void test_last_name_is_also_title()
+        public void TestLastNameIsAlsoTitle()
         {
             var hn = new HumanName("Amy E Maid");
             Assert.AreEqual("Amy", hn.First);
@@ -18,7 +18,7 @@ public partial class NameParserTests
         }
 
         [TestMethod]
-        public void test_last_name_is_also_title_no_comma()
+        public void TestLastNameIsAlsoTitleNoComma()
         {
             var hn = new HumanName("Dr. Martin Luther King Jr.");
             Assert.AreEqual("Dr.", hn.Title);
@@ -29,7 +29,7 @@ public partial class NameParserTests
         }
 
         [TestMethod]
-        public void test_last_name_is_also_title_with_comma()
+        public void TestLastNameIsAlsoTitleWithComma()
         {
             var hn = new HumanName("Dr Martin Luther King, Jr.");
             Assert.AreEqual("Dr", hn.Title);
@@ -40,7 +40,7 @@ public partial class NameParserTests
         }
 
         [TestMethod]
-        public void test_last_name_is_also_title3()
+        public void TestLastNameIsAlsoTitle3()
         {
             var hn = new HumanName("John King");
             Assert.AreEqual("John", hn.First);
@@ -48,7 +48,7 @@ public partial class NameParserTests
         }
 
         [TestMethod]
-        public void test_title_with_conjunction()
+        public void TestTitleWithConjunction()
         {
             var hn = new HumanName("Secretary of State Hillary Clinton");
             Assert.AreEqual("Secretary of State", hn.Title);
@@ -57,7 +57,7 @@ public partial class NameParserTests
         }
 
         [TestMethod]
-        public void test_compound_title_with_conjunction()
+        public void TestCompoundTitleWithConjunction()
         {
             var hn = new HumanName("Cardinal Secretary of State Hillary Clinton");
             Assert.AreEqual("Cardinal Secretary of State", hn.Title);
@@ -66,7 +66,7 @@ public partial class NameParserTests
         }
 
         [TestMethod]
-        public void test_title_is_title()
+        public void TestTitleIsTitle()
         {
             var hn = new HumanName("Coach");
             Assert.AreEqual("Coach", hn.Title);
@@ -75,7 +75,7 @@ public partial class NameParserTests
 // TODO: fix handling of U.S.
         [Ignore("Expected failure")]
         [TestMethod]
-        public void test_chained_title_first_name_title_is_initials()
+        public void TestChainedTitleFirstNameTitleIsInitials()
         {
             var hn = new HumanName("U.S. District Judge Marc Thomas Treadwell");
             Assert.AreEqual("U.S. District Judge", hn.Title);
@@ -85,7 +85,7 @@ public partial class NameParserTests
         }
 
         [TestMethod]
-        public void test_conflict_with_chained_title_first_name_initial()
+        public void TestConflictWithChainedTitleFirstNameInitial()
         {
             var hn = new HumanName("U. S. Grant");
             Assert.AreEqual("U.", hn.First);
@@ -94,7 +94,7 @@ public partial class NameParserTests
         }
 
         [TestMethod]
-        public void test_chained_title_first_name_initial_with_no_period()
+        public void TestChainedTitleFirstNameInitialWithNoPeriod()
         {
             var hn = new HumanName("US Magistrate Judge T Michael Putnam");
             Assert.AreEqual("US Magistrate Judge", hn.Title);
@@ -104,7 +104,7 @@ public partial class NameParserTests
         }
 
         [TestMethod]
-        public void test_chained_hyphenated_title()
+        public void TestChainedHyphenatedTitle()
         {
             var hn = new HumanName("US Magistrate-Judge Elizabeth E Campbell");
             Assert.AreEqual("US Magistrate-Judge", hn.Title);
@@ -114,7 +114,7 @@ public partial class NameParserTests
         }
 
         [TestMethod]
-        public void test_chained_hyphenated_title_with_comma_suffix()
+        public void TestChainedHyphenatedTitleWithCommaSuffix()
         {
             var hn = new HumanName("Mag-Judge Harwell G Davis, III");
             Assert.AreEqual("Mag-Judge", hn.Title);
@@ -126,14 +126,14 @@ public partial class NameParserTests
 
 [Ignore("Expected failure")]
         [TestMethod]
-        public void test_title_multiple_titles_with_apostrophe_s()
+        public void TestTitleMultipleTitlesWithApostropheS()
         {
             var hn = new HumanName("The Right Hon. the President of the Queen's Bench Division");
             Assert.AreEqual("The Right Hon. the President of the Queen's Bench Division", hn.Title);
         }
 
         [TestMethod]
-        public void test_title_starts_with_conjunction()
+        public void TestTitleStartsWithConjunction()
         {
             var hn = new HumanName("The Rt Hon John Jones");
             Assert.AreEqual("The Rt Hon", hn.Title);
@@ -142,28 +142,28 @@ public partial class NameParserTests
         }
 
         [TestMethod]
-        public void test_conjunction_before_title()
+        public void TestConjunctionBeforeTitle()
         {
             var hn = new HumanName("The Lord of the Universe");
             Assert.AreEqual("The Lord of the Universe", hn.Title);
         }
 
         [TestMethod]
-        public void test_double_conjunction_on_title()
+        public void TestDoubleConjunctionOnTitle()
         {
             var hn = new HumanName("Lord of the Universe");
             Assert.AreEqual("Lord of the Universe", hn.Title);
         }
 
         [TestMethod]
-        public void test_triple_conjunction_on_title()
+        public void TestTripleConjunctionOnTitle()
         {
             var hn = new HumanName("Lord and of the Universe");
             Assert.AreEqual("Lord and of the Universe", hn.Title);
         }
 
         [TestMethod]
-        public void test_multiple_conjunctions_on_multiple_titles()
+        public void TestMultipleConjunctionsOnMultipleTitles()
         {
             var hn = new HumanName("Lord of the Universe and Associate Supreme Queen of the World Lisa Simpson");
             Assert.AreEqual("Lord of the Universe and Associate Supreme Queen of the World", hn.Title);
@@ -172,7 +172,7 @@ public partial class NameParserTests
         }
 
         [TestMethod]
-        public void test_title_with_last_initial_is_suffix()
+        public void TestTitleWithLastInitialIsSuffix()
         {
             var hn = new HumanName("King John V.");
             Assert.AreEqual("King", hn.Title);
@@ -181,7 +181,7 @@ public partial class NameParserTests
         }
 
         [TestMethod]
-        public void test_initials_also_suffix()
+        public void TestInitialsAlsoSuffix()
         {
             var hn = new HumanName("Smith, J.R.");
             Assert.AreEqual("J.R.", hn.First);
@@ -190,7 +190,7 @@ public partial class NameParserTests
         }
 
         [TestMethod]
-        public void test_two_title_parts_separated_by_periods()
+        public void TestTwoTitlePartsSeparatedByPeriods()
         {
             var hn = new HumanName("Lt.Gen. John A. Kenneth Doe IV");
             Assert.AreEqual("Lt.Gen.", hn.Title);
@@ -201,7 +201,7 @@ public partial class NameParserTests
         }
 
         [TestMethod]
-        public void test_two_part_title()
+        public void TestTwoPartTitle()
         {
             var hn = new HumanName("Lt. Gen. John A. Kenneth Doe IV");
             Assert.AreEqual("Lt. Gen.", hn.Title);
@@ -212,7 +212,7 @@ public partial class NameParserTests
         }
 
         [TestMethod]
-        public void test_two_part_title_with_lastname_comma()
+        public void TestTwoPartTitleWithLastnameComma()
         {
             var hn = new HumanName("Doe, Lt. Gen. John A. Kenneth IV");
             Assert.AreEqual("Lt. Gen.", hn.Title);
@@ -223,7 +223,7 @@ public partial class NameParserTests
         }
 
         [TestMethod]
-        public void test_two_part_title_with_suffix_comma()
+        public void TestTwoPartTitleWithSuffixComma()
         {
             var hn = new HumanName("Lt. Gen. John A. Kenneth Doe, Jr.");
             Assert.AreEqual("Lt. Gen.", hn.Title);
@@ -234,7 +234,7 @@ public partial class NameParserTests
         }
 
         [TestMethod]
-        public void test_possible_conflict_with_middle_initial_that_could_be_suffix()
+        public void TestPossibleConflictWithMiddleInitialThatCouldBeSuffix()
         {
             var hn = new HumanName("Doe, Rev. John V, Jr.");
             Assert.AreEqual("Rev.", hn.Title);
@@ -245,7 +245,7 @@ public partial class NameParserTests
         }
 
         [TestMethod]
-        public void test_possible_conflict_with_suffix_that_could_be_initial()
+        public void TestPossibleConflictWithSuffixThatCouldBeInitial()
         {
             var hn = new HumanName("Doe, Rev. John A., V, Jr.");
             Assert.AreEqual("Rev.", hn.Title);
@@ -259,7 +259,7 @@ public partial class NameParserTests
         // this test could re-enable this test if we decide to support 'ben' as a prefix
         [Ignore("Expected failure")]
         [TestMethod]
-        public void test_ben_as_conjunction()
+        public void TestBenAsConjunction()
         {
             var hn = new HumanName("Ahmad ben Husain");
             Assert.AreEqual("Ahmad", hn.First);
@@ -267,7 +267,7 @@ public partial class NameParserTests
         }
 
         [TestMethod]
-        public void test_ben_as_first_name()
+        public void TestBenAsFirstName()
         {
             var hn = new HumanName("Ben Johnson");
             Assert.AreEqual("Ben", hn.First);
@@ -275,7 +275,7 @@ public partial class NameParserTests
         }
 
         [TestMethod]
-        public void test_ben_as_first_name_with_middle_name()
+        public void TestBenAsFirstNameWithMiddleName()
         {
             var hn = new HumanName("Ben Alex Johnson");
             Assert.AreEqual("Ben", hn.First);
@@ -284,7 +284,7 @@ public partial class NameParserTests
         }
 
         [TestMethod]
-        public void test_ben_as_middle_name()
+        public void TestBenAsMiddleName()
         {
             var hn = new HumanName("Alex Ben Johnson");
             Assert.AreEqual("Alex", hn.First);
@@ -294,7 +294,7 @@ public partial class NameParserTests
 
 // http://code.google.com/p/python-nameparser/issues/detail?id=13
         [TestMethod]
-        public void test_last_name_also_prefix()
+        public void TestLastNameAlsoPrefix()
         {
             var hn = new HumanName("Jane Doctor");
             Assert.AreEqual("Jane", hn.First);
@@ -302,7 +302,7 @@ public partial class NameParserTests
         }
 
         [TestMethod]
-        public void test_title_with_periods()
+        public void TestTitleWithPeriods()
         {
             var hn = new HumanName("Lt.Gov. John Doe");
             Assert.AreEqual("Lt.Gov.", hn.Title);
@@ -311,7 +311,7 @@ public partial class NameParserTests
         }
 
         [TestMethod]
-        public void test_title_with_periods_lastname_comma()
+        public void TestTitleWithPeriodsLastnameComma()
         {
             var hn = new HumanName("Doe, Lt.Gov. John");
             Assert.AreEqual("Lt.Gov.", hn.Title);
@@ -320,7 +320,7 @@ public partial class NameParserTests
         }
 
         [TestMethod]
-        public void test_mac_with_spaces()
+        public void TestMacWithSpaces()
         {
             var hn = new HumanName("Jane Mac Beth");
             Assert.AreEqual("Jane", hn.First);
@@ -328,7 +328,7 @@ public partial class NameParserTests
         }
 
         [TestMethod]
-        public void test_mac_as_first_name()
+        public void TestMacAsFirstName()
         {
             var hn = new HumanName("Mac Miller");
             Assert.AreEqual("Mac", hn.First);
@@ -336,7 +336,7 @@ public partial class NameParserTests
         }
 
         [TestMethod]
-        public void test_multiple_prefixes()
+        public void TestMultiplePrefixes()
         {
             var hn = new HumanName("Mike van der Velt");
             Assert.AreEqual("Mike", hn.First);
@@ -344,7 +344,7 @@ public partial class NameParserTests
         }
 
         [TestMethod]
-        public void test_2_same_prefixes_in_the_name()
+        public void Test2SamePrefixesInTheName()
         {
             var hn = new HumanName("Vincent van Gogh van Beethoven");
             Assert.AreEqual("Vincent", hn.First);

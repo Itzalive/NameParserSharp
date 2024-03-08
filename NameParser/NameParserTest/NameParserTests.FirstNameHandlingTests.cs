@@ -9,14 +9,14 @@ public partial class NameParserTests
     public class FirstNameHandlingTests
     {
         [TestMethod]
-        public void test_first_name()
+        public void TestFirstName()
         {
             var hn = new HumanName("Andrew");
             Assert.AreEqual("Andrew", hn.First);
         }
 
         [TestMethod]
-        public void test_assume_title_and_one_other_name_is_last_name()
+        public void TestAssumeTitleAndOneOtherNameIsLastName()
         {
             var hn = new HumanName("Rev Andrews");
             Assert.AreEqual("Rev", hn.Title);
@@ -28,7 +28,7 @@ public partial class NameParserTests
         // related to https://github.com/derek73/python-nameparser/issues/2
         [Ignore("Expect failure")]
         [TestMethod]
-        public void test_assume_suffix_title_and_one_other_name_is_last_name()
+        public void TestAssumeSuffixTitleAndOneOtherNameIsLastName()
         {
             var hn = new HumanName("Andrews, M.D.");
             Assert.AreEqual("M.D.", hn.Suffix);
@@ -36,7 +36,7 @@ public partial class NameParserTests
         }
 
         [TestMethod]
-        public void test_suffix_in_lastname_part_of_lastname_comma_format()
+        public void TestSuffixInLastnamePartOfLastnameCommaFormat()
         {
             var hn = new HumanName("Smith Jr., John");
             Assert.AreEqual("Smith", hn.Last);
@@ -45,7 +45,7 @@ public partial class NameParserTests
         }
 
         [TestMethod]
-        public void test_sir_exception_to_first_name_rule()
+        public void TestSirExceptionToFirstNameRule()
         {
             var hn = new HumanName("Sir Gerald");
             Assert.AreEqual("Sir", hn.Title);
@@ -53,7 +53,7 @@ public partial class NameParserTests
         }
 
         [TestMethod]
-        public void test_king_exception_to_first_name_rule()
+        public void TestKingExceptionToFirstNameRule()
         {
             var hn = new HumanName("King Henry");
             Assert.AreEqual("King", hn.Title);
@@ -61,7 +61,7 @@ public partial class NameParserTests
         }
 
         [TestMethod]
-        public void test_queen_exception_to_first_name_rule()
+        public void TestQueenExceptionToFirstNameRule()
         {
             var hn = new HumanName("Queen Elizabeth");
             Assert.AreEqual("Queen", hn.Title);
@@ -69,7 +69,7 @@ public partial class NameParserTests
         }
 
         [TestMethod]
-        public void test_dame_exception_to_first_name_rule()
+        public void TestDameExceptionToFirstNameRule()
         {
             var hn = new HumanName("Dame Mary");
             Assert.AreEqual("Dame", hn.Title);
@@ -77,7 +77,7 @@ public partial class NameParserTests
         }
 
         [TestMethod]
-        public void test_first_name_is_not_prefix_if_only_two_parts()
+        public void TestFirstNameIsNotPrefixIfOnlyTwoParts()
         {
             // When there are only two parts, don't join prefixes or conjunctions
             var hn = new HumanName("Van Nguyen");
@@ -86,7 +86,7 @@ public partial class NameParserTests
         }
 
         [TestMethod]
-        public void test_first_name_is_not_prefix_if_only_two_parts_comma()
+        public void TestFirstNameIsNotPrefixIfOnlyTwoPartsComma()
         {
             var hn = new HumanName("Nguyen, Van");
             Assert.AreEqual("Van", hn.First);
@@ -95,7 +95,7 @@ public partial class NameParserTests
 
 [Ignore("Expected failure")]
         [TestMethod]
-        public void test_first_name_is_prefix_if_three_parts()
+        public void TestFirstNameIsPrefixIfThreeParts()
         {
             //"""Not sure how to fix this without breaking Mr and Mrs"""
             var hn = new HumanName("Mr. Van Nguyen");
