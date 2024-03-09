@@ -1,292 +1,289 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using NameParser;
+﻿using NameParser;
+using Xunit;
 
 namespace NameParserTest;
 
 public partial class NameParserTests
 {
-    [TestClass]
     public class ConjunctionTests
     {
         // Last name with conjunction
-        [TestMethod]
+        [Fact]
         public void TestLastNameWithConjunction()
         {
             var hn = new HumanName("Jose Aznar y Lopez");
-            Assert.AreEqual("Jose", hn.First);
-            Assert.AreEqual("Aznar y Lopez", hn.Last);
+            Assert.Equal("Jose", hn.First);
+            Assert.Equal("Aznar y Lopez", hn.Last);
         }
 
-        [TestMethod]
+        [Fact]
         public void TestMultipleConjunctions()
         {
             var hn = new HumanName("part1 of The part2 of the part3 and part4");
-            Assert.AreEqual("part1 of The part2 of the part3 and part4", hn.First);
+            Assert.Equal("part1 of The part2 of the part3 and part4", hn.First);
         }
 
-        [TestMethod]
+        [Fact]
         public void TestMultipleConjunctions2()
         {
             var hn = new HumanName("part1 of and The part2 of the part3 And part4");
-            Assert.AreEqual("part1 of and The part2 of the part3 And part4", hn.First);
+            Assert.Equal("part1 of and The part2 of the part3 And part4", hn.First);
         }
 
-        [TestMethod]
+        [Fact]
         public void TestEndsWithConjunction()
         {
             var hn = new HumanName("Jon Dough and");
-            Assert.AreEqual("Jon", hn.First);
-            Assert.AreEqual("Dough and", hn.Last);
+            Assert.Equal("Jon", hn.First);
+            Assert.Equal("Dough and", hn.Last);
         }
 
-        [TestMethod]
+        [Fact]
         public void TestEndsWithTwoConjunctions()
         {
             var hn = new HumanName("Jon Dough and of");
-            Assert.AreEqual("Jon", hn.First);
-            Assert.AreEqual("Dough and of", hn.Last);
+            Assert.Equal("Jon", hn.First);
+            Assert.Equal("Dough and of", hn.Last);
         }
 
-        [TestMethod]
+        [Fact]
         public void TestStartsWithConjunction()
         {
             var hn = new HumanName("and Jon Dough");
-            Assert.AreEqual("and Jon", hn.First);
-            Assert.AreEqual("Dough", hn.Last);
+            Assert.Equal("and Jon", hn.First);
+            Assert.Equal("Dough", hn.Last);
         }
 
-        [TestMethod]
+        [Fact]
         public void TestStartsWithTwoConjunctions()
         {
             var hn = new HumanName("the and Jon Dough");
-            Assert.AreEqual("the and Jon", hn.First);
-            Assert.AreEqual("Dough", hn.Last);
+            Assert.Equal("the and Jon", hn.First);
+            Assert.Equal("Dough", hn.Last);
         }
 
         // Potential conjunction/prefix treated as initial (because uppercase);
-        [TestMethod]
+        [Fact]
         public void TestUppercaseMiddleInitialConflictWithConjunction()
         {
             var hn = new HumanName("John E Smith");
-            Assert.AreEqual("John", hn.First);
-            Assert.AreEqual("E", hn.Middle);
-            Assert.AreEqual("Smith", hn.Last);
+            Assert.Equal("John", hn.First);
+            Assert.Equal("E", hn.Middle);
+            Assert.Equal("Smith", hn.Last);
         }
 
-        [TestMethod]
+        [Fact]
         public void TestLowercaseMiddleInitialWithPeriodConflictWithConjunction()
         {
             var hn = new HumanName("john e. smith");
-            Assert.AreEqual("john", hn.First);
-            Assert.AreEqual("e.", hn.Middle);
-            Assert.AreEqual("smith", hn.Last);
+            Assert.Equal("john", hn.First);
+            Assert.Equal("e.", hn.Middle);
+            Assert.Equal("smith", hn.Last);
         }
 
         // The conjunction "e" can also be an initial
-        [TestMethod]
+        [Fact]
         public void TestLowercaseFirstInitialConflictWithConjunction()
         {
             var hn = new HumanName("e j smith");
-            Assert.AreEqual("e", hn.First);
-            Assert.AreEqual("j", hn.Middle);
-            Assert.AreEqual("smith", hn.Last);
+            Assert.Equal("e", hn.First);
+            Assert.Equal("j", hn.Middle);
+            Assert.Equal("smith", hn.Last);
         }
 
-        [TestMethod]
+        [Fact]
         public void TestLowercaseMiddleInitialConflictWithConjunction()
         {
             var hn = new HumanName("John e Smith");
-            Assert.AreEqual("John", hn.First);
-            Assert.AreEqual("e", hn.Middle);
-            Assert.AreEqual("Smith", hn.Last);
+            Assert.Equal("John", hn.First);
+            Assert.Equal("e", hn.Middle);
+            Assert.Equal("Smith", hn.Last);
         }
 
-        [TestMethod]
+        [Fact]
         public void TestLowercaseMiddleInitialAndSuffixConflictWithConjunction()
         {
             var hn = new HumanName("John e Smith, III");
-            Assert.AreEqual("John", hn.First);
-            Assert.AreEqual("e", hn.Middle);
-            Assert.AreEqual("Smith", hn.Last);
-            Assert.AreEqual("III", hn.Suffix);
+            Assert.Equal("John", hn.First);
+            Assert.Equal("e", hn.Middle);
+            Assert.Equal("Smith", hn.Last);
+            Assert.Equal("III", hn.Suffix);
         }
 
-        [TestMethod]
+        [Fact]
         public void TestLowercaseMiddleInitialAndNoCommaSuffixConflictWithConjunction()
         {
             var hn = new HumanName("John e Smith III");
-            Assert.AreEqual("John", hn.First);
-            Assert.AreEqual("e", hn.Middle);
-            Assert.AreEqual("Smith", hn.Last);
-            Assert.AreEqual("III", hn.Suffix);
+            Assert.Equal("John", hn.First);
+            Assert.Equal("e", hn.Middle);
+            Assert.Equal("Smith", hn.Last);
+            Assert.Equal("III", hn.Suffix);
         }
 
-        [TestMethod]
+        [Fact]
         public void TestLowercaseMiddleInitialCommaLastnameAndSuffixConflictWithConjunction()
         {
             var hn = new HumanName("Smith, John e, III, Jr");
-            Assert.AreEqual("John", hn.First);
-            Assert.AreEqual("e", hn.Middle);
-            Assert.AreEqual("Smith", hn.Last);
-            Assert.AreEqual("III, Jr", hn.Suffix);
+            Assert.Equal("John", hn.First);
+            Assert.Equal("e", hn.Middle);
+            Assert.Equal("Smith", hn.Last);
+            Assert.Equal("III, Jr", hn.Suffix);
         }
 
-            [Ignore("Expected failure")]
-        [TestMethod]
+        [Fact(Skip = "Expected failure")]
         public void TestTwoInitialsConflictWithConjunction()
         {
             // Supporting this seems to screw up titles with periods in them like M.B.A.
             var hn = new HumanName("E.T. Smith");
-            Assert.AreEqual("E.", hn.First);
-            Assert.AreEqual("T.", hn.Middle);
-            Assert.AreEqual("Smith", hn.Last);
+            Assert.Equal("E.", hn.First);
+            Assert.Equal("T.", hn.Middle);
+            Assert.Equal("Smith", hn.Last);
         }
 
-        [TestMethod]
+        [Fact]
         public void TestCouplesNames()
         {
             var hn = new HumanName("John and Jane Smith");
-            Assert.AreEqual("John and Jane", hn.First);
-            Assert.AreEqual("Smith", hn.Last);
+            Assert.Equal("John and Jane", hn.First);
+            Assert.Equal("Smith", hn.Last);
         }
 
-        [TestMethod]
+        [Fact]
         public void TestCouplesNamesWithConjunctionLastname()
         {
             var hn = new HumanName("John and Jane Aznar y Lopez");
-            Assert.AreEqual("John and Jane", hn.First);
-            Assert.AreEqual("Aznar y Lopez", hn.Last);
+            Assert.Equal("John and Jane", hn.First);
+            Assert.Equal("Aznar y Lopez", hn.Last);
         }
 
-        [TestMethod]
+        [Fact]
         public void TestCoupleTitles()
         {
             var hn = new HumanName("Mr. and Mrs. John and Jane Smith");
-            Assert.AreEqual("Mr. and Mrs.", hn.Title);
-            Assert.AreEqual("John and Jane", hn.First);
-            Assert.AreEqual("Smith", hn.Last);
+            Assert.Equal("Mr. and Mrs.", hn.Title);
+            Assert.Equal("John and Jane", hn.First);
+            Assert.Equal("Smith", hn.Last);
         }
 
-        [TestMethod]
+        [Fact]
         public void TestTitleWithThreePartNameLastInitialIsSuffixUppercaseNoPeriod()
         {
             var hn = new HumanName("King John Alexander V");
-            Assert.AreEqual("King", hn.Title);
-            Assert.AreEqual("John", hn.First);
-            Assert.AreEqual("Alexander", hn.Last);
-            Assert.AreEqual("V", hn.Suffix);
+            Assert.Equal("King", hn.Title);
+            Assert.Equal("John", hn.First);
+            Assert.Equal("Alexander", hn.Last);
+            Assert.Equal("V", hn.Suffix);
         }
 
-        [TestMethod]
+        [Fact]
         public void TestFourNamePartsWithSuffixThatCouldBeInitialLowercaseNoPeriod()
         {
             var hn = new HumanName("larry james edward johnson v");
-            Assert.AreEqual("larry", hn.First);
-            Assert.AreEqual("james edward", hn.Middle);
-            Assert.AreEqual("johnson", hn.Last);
-            Assert.AreEqual("v", hn.Suffix);
+            Assert.Equal("larry", hn.First);
+            Assert.Equal("james edward", hn.Middle);
+            Assert.Equal("johnson", hn.Last);
+            Assert.Equal("v", hn.Suffix);
         }
 
-        [TestMethod]
+        [Fact]
         public void TestFourNamePartsWithSuffixThatCouldBeInitialUppercaseNoPeriod()
         {
             var hn = new HumanName("Larry James Johnson I");
-            Assert.AreEqual("Larry", hn.First);
-            Assert.AreEqual("James", hn.Middle);
-            Assert.AreEqual("Johnson", hn.Last);
-            Assert.AreEqual("I", hn.Suffix);
+            Assert.Equal("Larry", hn.First);
+            Assert.Equal("James", hn.Middle);
+            Assert.Equal("Johnson", hn.Last);
+            Assert.Equal("I", hn.Suffix);
         }
 
-        [TestMethod]
+        [Fact]
         public void TestRomanNumeralInitials()
         {
             var hn = new HumanName("Larry V I");
-            Assert.AreEqual("Larry", hn.First);
-            Assert.AreEqual("V", hn.Middle);
-            Assert.AreEqual("I", hn.Last);
-            Assert.AreEqual("", hn.Suffix);
+            Assert.Equal("Larry", hn.First);
+            Assert.Equal("V", hn.Middle);
+            Assert.Equal("I", hn.Last);
+            Assert.Equal("", hn.Suffix);
         }
 
         // tests for Rev. title (Reverend);
-        [TestMethod]
+        [Fact]
         public void Test124()
         {
             var hn = new HumanName("Rev. John A. Kenneth Doe");
-            Assert.AreEqual("Rev.", hn.Title);
-            Assert.AreEqual("A. Kenneth", hn.Middle);
-            Assert.AreEqual("John", hn.First);
-            Assert.AreEqual("Doe", hn.Last);
+            Assert.Equal("Rev.", hn.Title);
+            Assert.Equal("A. Kenneth", hn.Middle);
+            Assert.Equal("John", hn.First);
+            Assert.Equal("Doe", hn.Last);
         }
 
-        [TestMethod]
+        [Fact]
         public void Test125()
         {
             var hn = new HumanName("Rev John A. Kenneth Doe");
-            Assert.AreEqual("Rev", hn.Title);
-            Assert.AreEqual("A. Kenneth", hn.Middle);
-            Assert.AreEqual("John", hn.First);
-            Assert.AreEqual("Doe", hn.Last);
+            Assert.Equal("Rev", hn.Title);
+            Assert.Equal("A. Kenneth", hn.Middle);
+            Assert.Equal("John", hn.First);
+            Assert.Equal("Doe", hn.Last);
         }
 
-        [TestMethod]
+        [Fact]
         public void Test126()
         {
             var hn = new HumanName("Doe, Rev. John A. Jr.");
-            Assert.AreEqual("Rev.", hn.Title);
-            Assert.AreEqual("John", hn.First);
-            Assert.AreEqual("Doe", hn.Last);
-            Assert.AreEqual("A.", hn.Middle);
-            Assert.AreEqual("Jr.", hn.Suffix);
+            Assert.Equal("Rev.", hn.Title);
+            Assert.Equal("John", hn.First);
+            Assert.Equal("Doe", hn.Last);
+            Assert.Equal("A.", hn.Middle);
+            Assert.Equal("Jr.", hn.Suffix);
         }
 
-        [TestMethod]
+        [Fact]
         public void Test127()
         {
             var hn = new HumanName("Buca di Beppo");
-            Assert.AreEqual("Buca", hn.First);
-            Assert.AreEqual("di Beppo", hn.Last);
+            Assert.Equal("Buca", hn.First);
+            Assert.Equal("di Beppo", hn.Last);
         }
 
-        [TestMethod]
+        [Fact]
         public void TestLeAsLastName()
         {
             var hn = new HumanName("Yin Le");
-            Assert.AreEqual("Yin", hn.First);
-            Assert.AreEqual("Le", hn.Last);
+            Assert.Equal("Yin", hn.First);
+            Assert.Equal("Le", hn.Last);
         }
 
-        [TestMethod]
+        [Fact]
         public void TestLeAsLastNameWithMiddleInitial()
         {
             var hn = new HumanName("Yin a Le");
-            Assert.AreEqual("Yin", hn.First);
-            Assert.AreEqual("a", hn.Middle);
-            Assert.AreEqual("Le", hn.Last);
+            Assert.Equal("Yin", hn.First);
+            Assert.Equal("a", hn.Middle);
+            Assert.Equal("Le", hn.Last);
         }
 
-        [TestMethod]
+        [Fact]
         public void TestConjunctionInAnAddressWithATitle()
         {
             var hn = new HumanName("His Excellency Lord Duncan");
-            Assert.AreEqual("His Excellency Lord", hn.Title);
-            Assert.AreEqual("Duncan", hn.Last);
+            Assert.Equal("His Excellency Lord", hn.Title);
+            Assert.Equal("Duncan", hn.Last);
         }
 
-        [Ignore("Expected failure")]
-        [TestMethod]
+        [Fact(Skip = "Expected failure")]
         public void TestConjunctionInAnAddressWithAFirstNameTitle()
         {
             var hn = new HumanName("Her Majesty Queen Elizabeth");
-            Assert.AreEqual("Her Majesty Queen", hn.Title);
+            Assert.Equal("Her Majesty Queen", hn.Title);
             // if you want to be technical, Queen is in FIRST_NAME_TITLES
-            Assert.AreEqual("Elizabeth", hn.First);
+            Assert.Equal("Elizabeth", hn.First);
         }
 
-        [TestMethod]
+        [Fact]
         public void TestNameIsConjunctions()
         {
             var hn = new HumanName("e and e");
-            Assert.AreEqual("e and e", hn.First);
+            Assert.Equal("e and e", hn.First);
         }
     }
 }

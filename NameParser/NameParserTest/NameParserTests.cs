@@ -1,340 +1,338 @@
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NameParser;
 using System;
+using Xunit;
 
 namespace NameParserTest
 {
-    [TestClass]
     public partial class NameParserTests
     {
-        [TestMethod]
-        [ExpectedException(typeof(ArgumentNullException))]
+        [Fact]
         public void NullInput()
         {
-            var parsed = new HumanName(null);
+            Assert.Throws<ArgumentNullException>(() => new HumanName(null));
         }
 
 
-        [TestMethod]
+        [Fact]
         public void BlankInput()
         {
             var parsed = new HumanName(string.Empty);
-            Assert.AreEqual(string.Empty, parsed.First);
-            Assert.AreEqual(string.Empty, parsed.Middle);
-            Assert.AreEqual(string.Empty, parsed.Last);
-            Assert.AreEqual(string.Empty, parsed.Title);
-            Assert.AreEqual(string.Empty, parsed.Nickname);
-            Assert.AreEqual(string.Empty, parsed.Suffix);
+            Assert.Equal(string.Empty, parsed.First);
+            Assert.Equal(string.Empty, parsed.Middle);
+            Assert.Equal(string.Empty, parsed.Last);
+            Assert.Equal(string.Empty, parsed.Title);
+            Assert.Equal(string.Empty, parsed.Nickname);
+            Assert.Equal(string.Empty, parsed.Suffix);
         }
 
-        [TestMethod]
+        [Fact]
         public void Jfk()
         {
             var jfk = new HumanName("president john 'jack' fitzgerald kennedy");
 
-            Assert.AreEqual("president", jfk.Title);
-            Assert.AreEqual("john", jfk.First);
-            Assert.AreEqual("fitzgerald", jfk.Middle);
-            Assert.AreEqual("kennedy", jfk.Last);
-            Assert.AreEqual(string.Empty, jfk.Suffix);
-            Assert.AreEqual("jack", jfk.Nickname);
-            Assert.AreEqual("president john fitzgerald kennedy (jack)", jfk.ToString());
-            Assert.AreEqual("kennedy", jfk.LastBase);
-            Assert.AreEqual(string.Empty, jfk.LastPrefixes);
+            Assert.Equal("president", jfk.Title);
+            Assert.Equal("john", jfk.First);
+            Assert.Equal("fitzgerald", jfk.Middle);
+            Assert.Equal("kennedy", jfk.Last);
+            Assert.Equal(string.Empty, jfk.Suffix);
+            Assert.Equal("jack", jfk.Nickname);
+            Assert.Equal("president john fitzgerald kennedy (jack)", jfk.ToString());
+            Assert.Equal("kennedy", jfk.LastBase);
+            Assert.Equal(string.Empty, jfk.LastPrefixes);
 
             jfk.Normalize();
 
-            Assert.AreEqual("President", jfk.Title);
-            Assert.AreEqual("John", jfk.First);
-            Assert.AreEqual("Fitzgerald", jfk.Middle);
-            Assert.AreEqual("Kennedy", jfk.Last);
-            Assert.AreEqual(string.Empty, jfk.Suffix);
-            Assert.AreEqual("Jack", jfk.Nickname);
-            Assert.AreEqual("President John Fitzgerald Kennedy (Jack)", jfk.ToString());
-            Assert.AreEqual("Kennedy", jfk.LastBase);
-            Assert.AreEqual(string.Empty, jfk.LastPrefixes);
+            Assert.Equal("President", jfk.Title);
+            Assert.Equal("John", jfk.First);
+            Assert.Equal("Fitzgerald", jfk.Middle);
+            Assert.Equal("Kennedy", jfk.Last);
+            Assert.Equal(string.Empty, jfk.Suffix);
+            Assert.Equal("Jack", jfk.Nickname);
+            Assert.Equal("President John Fitzgerald Kennedy (Jack)", jfk.ToString());
+            Assert.Equal("Kennedy", jfk.LastBase);
+            Assert.Equal(string.Empty, jfk.LastPrefixes);
         }
 
-        [TestMethod]
+        [Fact]
         public void Nixon()
         {
             var nixon = new HumanName("mr president richard (dick) nixon");
 
-            Assert.AreEqual("mr president", nixon.Title);
-            Assert.AreEqual("richard", nixon.First);
-            Assert.AreEqual(string.Empty, nixon.Middle);
-            Assert.AreEqual("nixon", nixon.Last);
-            Assert.AreEqual(string.Empty, nixon.Suffix);
-            Assert.AreEqual("dick", nixon.Nickname);
-            Assert.AreEqual("mr president richard nixon (dick)", nixon.ToString());
-            Assert.AreEqual("nixon", nixon.LastBase);
-            Assert.AreEqual(string.Empty, nixon.LastPrefixes);
+            Assert.Equal("mr president", nixon.Title);
+            Assert.Equal("richard", nixon.First);
+            Assert.Equal(string.Empty, nixon.Middle);
+            Assert.Equal("nixon", nixon.Last);
+            Assert.Equal(string.Empty, nixon.Suffix);
+            Assert.Equal("dick", nixon.Nickname);
+            Assert.Equal("mr president richard nixon (dick)", nixon.ToString());
+            Assert.Equal("nixon", nixon.LastBase);
+            Assert.Equal(string.Empty, nixon.LastPrefixes);
 
             nixon.Normalize();
 
-            Assert.AreEqual("Mr President", nixon.Title);
-            Assert.AreEqual("Richard", nixon.First);
-            Assert.AreEqual(string.Empty, nixon.Middle);
-            Assert.AreEqual("Nixon", nixon.Last);
-            Assert.AreEqual(string.Empty, nixon.Suffix);
-            Assert.AreEqual("Dick", nixon.Nickname);
-            Assert.AreEqual("Mr President Richard Nixon (Dick)", nixon.ToString());
-            Assert.AreEqual("Nixon", nixon.LastBase);
-            Assert.AreEqual(string.Empty, nixon.LastPrefixes);
+            Assert.Equal("Mr President", nixon.Title);
+            Assert.Equal("Richard", nixon.First);
+            Assert.Equal(string.Empty, nixon.Middle);
+            Assert.Equal("Nixon", nixon.Last);
+            Assert.Equal(string.Empty, nixon.Suffix);
+            Assert.Equal("Dick", nixon.Nickname);
+            Assert.Equal("Mr President Richard Nixon (Dick)", nixon.ToString());
+            Assert.Equal("Nixon", nixon.LastBase);
+            Assert.Equal(string.Empty, nixon.LastPrefixes);
         }
 
-        [TestMethod]
+        [Fact]
         public void TitleFirstOrLastName()
         {
             var mrJones = new HumanName("Mr. Jones");
-            Assert.AreEqual("Mr.", mrJones.Title);
-            Assert.AreEqual(string.Empty, mrJones.First);
-            Assert.AreEqual(string.Empty, mrJones.Middle);
-            Assert.AreEqual("Jones", mrJones.Last);
-            Assert.AreEqual(string.Empty, mrJones.Suffix);
-            Assert.AreEqual(string.Empty, mrJones.Nickname);
-            Assert.AreEqual("Jones", mrJones.LastBase);
-            Assert.AreEqual(string.Empty, mrJones.LastPrefixes);
+            Assert.Equal("Mr.", mrJones.Title);
+            Assert.Equal(string.Empty, mrJones.First);
+            Assert.Equal(string.Empty, mrJones.Middle);
+            Assert.Equal("Jones", mrJones.Last);
+            Assert.Equal(string.Empty, mrJones.Suffix);
+            Assert.Equal(string.Empty, mrJones.Nickname);
+            Assert.Equal("Jones", mrJones.LastBase);
+            Assert.Equal(string.Empty, mrJones.LastPrefixes);
 
 
             var uncleAdam = new HumanName("Uncle Adam");
-            Assert.AreEqual("Uncle", uncleAdam.Title);
-            Assert.AreEqual("Adam", uncleAdam.First);
-            Assert.AreEqual(string.Empty, uncleAdam.Middle);
-            Assert.AreEqual(string.Empty, uncleAdam.Last);
-            Assert.AreEqual(string.Empty, uncleAdam.Suffix);
-            Assert.AreEqual(string.Empty, uncleAdam.Nickname);
-            Assert.AreEqual(string.Empty, uncleAdam.LastBase);
-            Assert.AreEqual(string.Empty, uncleAdam.LastPrefixes);
+            Assert.Equal("Uncle", uncleAdam.Title);
+            Assert.Equal("Adam", uncleAdam.First);
+            Assert.Equal(string.Empty, uncleAdam.Middle);
+            Assert.Equal(string.Empty, uncleAdam.Last);
+            Assert.Equal(string.Empty, uncleAdam.Suffix);
+            Assert.Equal(string.Empty, uncleAdam.Nickname);
+            Assert.Equal(string.Empty, uncleAdam.LastBase);
+            Assert.Equal(string.Empty, uncleAdam.LastPrefixes);
         }
 
-        [TestMethod]
+        [Fact]
         public void DifferentInputsSameValues()
         {
             var fml = new HumanName("john x smith");
             var lfm = new HumanName("smith, john x");
 
-            Assert.IsTrue(fml == lfm);
+            Assert.True(fml == lfm);
         }
 
-        [TestMethod]
+        [Fact]
         public void NicknameAtBeginningDoubleQuote()
         {
             var parsed = new HumanName("\"TREY\" ROBERT HENRY BUSH III");
 
-            Assert.AreEqual(parsed.First, "ROBERT");
-            Assert.AreEqual(parsed.Middle, "HENRY");
-            Assert.AreEqual(parsed.Last, "BUSH");
-            Assert.AreEqual(parsed.Nickname, "TREY");
-            Assert.AreEqual(parsed.Suffix, "III");
+            Assert.Equal(parsed.First, "ROBERT");
+            Assert.Equal(parsed.Middle, "HENRY");
+            Assert.Equal(parsed.Last, "BUSH");
+            Assert.Equal(parsed.Nickname, "TREY");
+            Assert.Equal(parsed.Suffix, "III");
         }
-        [TestMethod]
+        [Fact]
 
         public void NicknameAtBeginningSingleQuote()
         {
             var parsed = new HumanName("'TREY' ROBERT HENRY BUSH III");
 
-            Assert.AreEqual(parsed.First, "ROBERT");
-            Assert.AreEqual(parsed.Middle, "HENRY");
-            Assert.AreEqual(parsed.Last, "BUSH");
-            Assert.AreEqual(parsed.Nickname, "TREY");
-            Assert.AreEqual(parsed.Suffix, "III");
+            Assert.Equal(parsed.First, "ROBERT");
+            Assert.Equal(parsed.Middle, "HENRY");
+            Assert.Equal(parsed.Last, "BUSH");
+            Assert.Equal(parsed.Nickname, "TREY");
+            Assert.Equal(parsed.Suffix, "III");
         }
 
-        [TestMethod]
+        [Fact]
         public void LastBaseAndPrefixes()
         {
             var parsed = new HumanName("John Smith");
-            Assert.AreEqual("Smith", parsed.Last);
-            Assert.AreEqual(string.Empty, parsed.LastPrefixes);
-            Assert.AreEqual("Smith", parsed.LastBase);
+            Assert.Equal("Smith", parsed.Last);
+            Assert.Equal(string.Empty, parsed.LastPrefixes);
+            Assert.Equal("Smith", parsed.LastBase);
 
             parsed = new HumanName("johannes van der waals");
-            Assert.AreEqual("johannes", parsed.First);
-            Assert.AreEqual("van der", parsed.LastPrefixes); // specifically, the prefixes to the last name
-            Assert.AreEqual("waals", parsed.LastBase); // only the base component of the last name
-            Assert.AreEqual("van der waals", parsed.Last); // the full last name, combined
+            Assert.Equal("johannes", parsed.First);
+            Assert.Equal("van der", parsed.LastPrefixes); // specifically, the prefixes to the last name
+            Assert.Equal("waals", parsed.LastBase); // only the base component of the last name
+            Assert.Equal("van der waals", parsed.Last); // the full last name, combined
 
             parsed.Normalize();
-            Assert.AreEqual("Johannes", parsed.First);
-            Assert.AreEqual("van der", parsed.LastPrefixes);
-            Assert.AreEqual("Waals", parsed.LastBase);
-            Assert.AreEqual("van der Waals", parsed.Last);
+            Assert.Equal("Johannes", parsed.First);
+            Assert.Equal("van der", parsed.LastPrefixes);
+            Assert.Equal("Waals", parsed.LastBase);
+            Assert.Equal("van der Waals", parsed.Last);
         }
 
-        [TestMethod]
+        [Fact]
         public void TwoNamesMacAthur()
         {
             HumanName.ParseMultipleNames = true;
             var parsed = new HumanName("John D. and Catherine T. MacArthur");
 
-            Assert.AreEqual("John", parsed.First);
-            Assert.AreEqual("D.", parsed.Middle);
-            Assert.AreEqual("MacArthur", parsed.Last);
+            Assert.Equal("John", parsed.First);
+            Assert.Equal("D.", parsed.Middle);
+            Assert.Equal("MacArthur", parsed.Last);
 
-            Assert.IsNotNull(parsed.AdditionalName);
+            Assert.NotNull(parsed.AdditionalName);
 
-            Assert.AreEqual("Catherine", parsed.AdditionalName.First);
-            Assert.AreEqual("T.", parsed.AdditionalName.Middle);
-            Assert.AreEqual("MacArthur", parsed.AdditionalName.Last);
+            Assert.Equal("Catherine", parsed.AdditionalName.First);
+            Assert.Equal("T.", parsed.AdditionalName.Middle);
+            Assert.Equal("MacArthur", parsed.AdditionalName.Last);
 
-            Assert.IsNull(parsed.AdditionalName.AdditionalName);
+            Assert.Null(parsed.AdditionalName.AdditionalName);
 
 
             parsed = new HumanName("John D. & Catherine T. MacArthur");
 
-            Assert.AreEqual("John", parsed.First);
-            Assert.AreEqual("D.", parsed.Middle);
-            Assert.AreEqual("MacArthur", parsed.Last);
+            Assert.Equal("John", parsed.First);
+            Assert.Equal("D.", parsed.Middle);
+            Assert.Equal("MacArthur", parsed.Last);
 
-            Assert.IsNotNull(parsed.AdditionalName);
+            Assert.NotNull(parsed.AdditionalName);
 
-            Assert.AreEqual("Catherine", parsed.AdditionalName.First);
-            Assert.AreEqual("T.", parsed.AdditionalName.Middle);
-            Assert.AreEqual("MacArthur", parsed.AdditionalName.Last);
+            Assert.Equal("Catherine", parsed.AdditionalName.First);
+            Assert.Equal("T.", parsed.AdditionalName.Middle);
+            Assert.Equal("MacArthur", parsed.AdditionalName.Last);
 
-            Assert.IsNull(parsed.AdditionalName.AdditionalName);
+            Assert.Null(parsed.AdditionalName.AdditionalName);
         }
 
-        [TestMethod]
+        [Fact]
         public void TwoNamesTitleFirstInitialLast()
         {
             HumanName.ParseMultipleNames = true;
             var parsed = new HumanName("Mr S Bloggs and Miss L Jones");
 
-            Assert.AreEqual("Mr", parsed.Title);
-            Assert.AreEqual("S", parsed.First);
-            Assert.AreEqual("", parsed.Middle);
-            Assert.AreEqual("Bloggs", parsed.Last);
+            Assert.Equal("Mr", parsed.Title);
+            Assert.Equal("S", parsed.First);
+            Assert.Equal("", parsed.Middle);
+            Assert.Equal("Bloggs", parsed.Last);
 
-            Assert.IsNotNull(parsed.AdditionalName);
+            Assert.NotNull(parsed.AdditionalName);
 
-            Assert.AreEqual("Miss", parsed.AdditionalName.Title);
-            Assert.AreEqual("L", parsed.AdditionalName.First);
-            Assert.AreEqual("", parsed.AdditionalName.Middle);
-            Assert.AreEqual("Jones", parsed.AdditionalName.Last);
+            Assert.Equal("Miss", parsed.AdditionalName.Title);
+            Assert.Equal("L", parsed.AdditionalName.First);
+            Assert.Equal("", parsed.AdditionalName.Middle);
+            Assert.Equal("Jones", parsed.AdditionalName.Last);
 
-            Assert.IsNull(parsed.AdditionalName.AdditionalName);
+            Assert.Null(parsed.AdditionalName.AdditionalName);
         }
 
-        [TestMethod]
+        [Fact]
         public void TwoNamesTitleFirstInitialMiddleInitialLast()
         {
             HumanName.ParseMultipleNames = true;
             var parsed = new HumanName("Mr S R Bloggs and Miss L B Jones");
 
-            Assert.AreEqual("Mr", parsed.Title);
-            Assert.AreEqual("S", parsed.First);
-            Assert.AreEqual("R", parsed.Middle);
-            Assert.AreEqual("Bloggs", parsed.Last);
+            Assert.Equal("Mr", parsed.Title);
+            Assert.Equal("S", parsed.First);
+            Assert.Equal("R", parsed.Middle);
+            Assert.Equal("Bloggs", parsed.Last);
 
-            Assert.IsNotNull(parsed.AdditionalName);
+            Assert.NotNull(parsed.AdditionalName);
 
-            Assert.AreEqual("Miss", parsed.AdditionalName.Title);
-            Assert.AreEqual("L", parsed.AdditionalName.First);
-            Assert.AreEqual("B", parsed.AdditionalName.Middle);
-            Assert.AreEqual("Jones", parsed.AdditionalName.Last);
+            Assert.Equal("Miss", parsed.AdditionalName.Title);
+            Assert.Equal("L", parsed.AdditionalName.First);
+            Assert.Equal("B", parsed.AdditionalName.Middle);
+            Assert.Equal("Jones", parsed.AdditionalName.Last);
 
-            Assert.IsNull(parsed.AdditionalName.AdditionalName);
+            Assert.Null(parsed.AdditionalName.AdditionalName);
         }
 
-        [TestMethod]
+        [Fact]
         public void ThreeNames()
         {
             HumanName.ParseMultipleNames = true;
             var johnSmith = new HumanName("Mr John Smith and Mrs Jane Doe and President Abraham Lincoln");
 
-            Assert.IsNotNull(johnSmith.AdditionalName);
+            Assert.NotNull(johnSmith.AdditionalName);
             var janeDoe = johnSmith.AdditionalName;
 
-            Assert.IsNotNull(janeDoe.AdditionalName);
+            Assert.NotNull(janeDoe.AdditionalName);
             var abrahamLincoln = janeDoe.AdditionalName;
 
-            Assert.AreEqual("Mr", johnSmith.Title);
-            Assert.AreEqual("John", johnSmith.First);
-            Assert.AreEqual("Smith", johnSmith.Last);
+            Assert.Equal("Mr", johnSmith.Title);
+            Assert.Equal("John", johnSmith.First);
+            Assert.Equal("Smith", johnSmith.Last);
 
-            Assert.AreEqual("Mrs", janeDoe.Title);
-            Assert.AreEqual("Jane", janeDoe.First);
-            Assert.AreEqual("Doe", janeDoe.Last);
+            Assert.Equal("Mrs", janeDoe.Title);
+            Assert.Equal("Jane", janeDoe.First);
+            Assert.Equal("Doe", janeDoe.Last);
 
-            Assert.AreEqual("President", abrahamLincoln.Title);
-            Assert.AreEqual("Abraham", abrahamLincoln.First);
-            Assert.AreEqual("Lincoln", abrahamLincoln.Last);
+            Assert.Equal("President", abrahamLincoln.Title);
+            Assert.Equal("Abraham", abrahamLincoln.First);
+            Assert.Equal("Lincoln", abrahamLincoln.Last);
         }
 
-        [TestMethod]
+        [Fact]
         // https://github.com/aeshirey/NameParserSharp/issues/8
         public void Parens()
         {
             var johnSmith = new HumanName("(John Smith)");
-            Assert.AreEqual(string.Empty, johnSmith.First);
-            Assert.AreEqual(string.Empty, johnSmith.Last);
-            Assert.AreEqual("John Smith", johnSmith.Nickname);
+            Assert.Equal(string.Empty, johnSmith.First);
+            Assert.Equal(string.Empty, johnSmith.Last);
+            Assert.Equal("John Smith", johnSmith.Nickname);
         }
 
-        [TestMethod]
+        [Fact]
         public void FirstMiddleLastSuffixNoCommas()
         {
             var john = new HumanName("John Quincy Smith III");
-            Assert.AreEqual("John", john.First);
-            Assert.AreEqual("Quincy", john.Middle);
-            Assert.AreEqual("Smith", john.Last);
-            Assert.AreEqual("III", john.Suffix);
+            Assert.Equal("John", john.First);
+            Assert.Equal("Quincy", john.Middle);
+            Assert.Equal("Smith", john.Last);
+            Assert.Equal("III", john.Suffix);
 
 
             var robert = new HumanName("Robert Lee Elder III");
-            Assert.AreEqual("Robert", robert.First);
-            Assert.AreEqual("Lee", robert.Middle);
-            Assert.AreEqual("Elder", robert.Last);
-            Assert.AreEqual("III", robert.Suffix);
+            Assert.Equal("Robert", robert.First);
+            Assert.Equal("Lee", robert.Middle);
+            Assert.Equal("Elder", robert.Last);
+            Assert.Equal("III", robert.Suffix);
         }
 
-        [TestMethod]
+        [Fact]
         public void TwoCommaWithMiddleName()
         {
             var parsed = new HumanName("Surname, John Middle, III");
 
-            Assert.AreEqual(parsed.First, "John");
-            Assert.AreEqual(parsed.Middle, "Middle");
-            Assert.AreEqual(parsed.Last, "Surname");
-            Assert.AreEqual(parsed.Suffix, "III");
+            Assert.Equal(parsed.First, "John");
+            Assert.Equal(parsed.Middle, "Middle");
+            Assert.Equal(parsed.Last, "Surname");
+            Assert.Equal(parsed.Suffix, "III");
         }
 
-        [TestMethod]
+        [Fact]
         public void FirstLastPrefixesLastSuffixNoCommas()
         {
             var valeriano = new HumanName("Valeriano De Leon JR.");
 
-            Assert.AreEqual("Valeriano", valeriano.First);
-            Assert.AreEqual("De", valeriano.LastPrefixes);
-            Assert.AreEqual("De Leon", valeriano.Last);
-            Assert.AreEqual("JR.", valeriano.Suffix);
+            Assert.Equal("Valeriano", valeriano.First);
+            Assert.Equal("De", valeriano.LastPrefixes);
+            Assert.Equal("De Leon", valeriano.Last);
+            Assert.Equal("JR.", valeriano.Suffix);
 
 
             var quincy = new HumanName("Quincy De La Rosa Sr");
-            Assert.AreEqual("Quincy", quincy.First);
-            Assert.AreEqual("De La", quincy.LastPrefixes);
-            Assert.AreEqual("De La Rosa", quincy.Last);
-            Assert.AreEqual("Sr", quincy.Suffix);
+            Assert.Equal("Quincy", quincy.First);
+            Assert.Equal("De La", quincy.LastPrefixes);
+            Assert.Equal("De La Rosa", quincy.Last);
+            Assert.Equal("Sr", quincy.Suffix);
         }
 
-        [DataRow("VAN L JOHNSON", "VAN", "L", "JOHNSON")]
-        [DataRow("VAN JOHNSON", "VAN", "", "JOHNSON")]
-        [DataRow("JOHNSON, VAN L", "VAN", "L", "JOHNSON")]
-        [TestMethod]
+        [InlineData("VAN L JOHNSON", "VAN", "L", "JOHNSON")]
+        [InlineData("VAN JOHNSON", "VAN", "", "JOHNSON")]
+        [InlineData("JOHNSON, VAN L", "VAN", "L", "JOHNSON")]
+        [Theory]
         // https://github.com/aeshirey/NameParserSharp/issues/15
         public void PrefixAsFirstName(string full, string first, string middle, string last)
         {
             var sut = new HumanName(full);
 
-            Assert.AreEqual(first, sut.First);
-            Assert.AreEqual(middle, sut.Middle);
-            Assert.AreEqual(last, sut.Last);
+            Assert.Equal(first, sut.First);
+            Assert.Equal(middle, sut.Middle);
+            Assert.Equal(last, sut.Last);
         }
 
 
-        [TestMethod]
+        [Fact]
         public void Conjunctions()
         {
             var mice = new HumanName("mrs and mrs mickey and minnie mouse");
@@ -344,45 +342,45 @@ namespace NameParserTest
         /// <summary>
         /// https://github.com/aeshirey/NameParserSharp/issues/18
         /// </summary>
-        [TestMethod]
+        [Fact]
         public void AddToLists()
         {
             var asIs = new HumanName("Mr. John Smith 2nd");
-            Assert.AreEqual("Mr.", asIs.Title);
-            Assert.AreEqual("John", asIs.First);
-            Assert.AreEqual("Smith", asIs.Middle);
-            Assert.AreEqual("2nd", asIs.Last);
-            Assert.AreEqual("", asIs.Suffix);
+            Assert.Equal("Mr.", asIs.Title);
+            Assert.Equal("John", asIs.First);
+            Assert.Equal("Smith", asIs.Middle);
+            Assert.Equal("2nd", asIs.Last);
+            Assert.Equal("", asIs.Suffix);
 
 
             HumanName.Suffixes.Add("2nd");
             var with2Nd = new HumanName("Mr. John Smith 2nd");
-            Assert.AreEqual("Mr.", with2Nd.Title);
-            Assert.AreEqual("John", with2Nd.First);
-            Assert.AreEqual("Smith", with2Nd.Last);
-            Assert.AreEqual("2nd", with2Nd.Suffix);
+            Assert.Equal("Mr.", with2Nd.Title);
+            Assert.Equal("John", with2Nd.First);
+            Assert.Equal("Smith", with2Nd.Last);
+            Assert.Equal("2nd", with2Nd.Suffix);
         }
 
 
         /// <summary>
         /// https://github.com/aeshirey/NameParserSharp/issues/20
         /// </summary>
-        [TestMethod]
+        [Fact]
         public void FirstNameIsPrefix()
         {
             // Default behavior
             var parsedPrefix = new HumanName("Mr. Del Richards");
-            Assert.AreEqual(parsedPrefix.Title, "Mr.");
-            Assert.AreEqual(parsedPrefix.First, "");
-            Assert.AreEqual(parsedPrefix.Last, "Del Richards");
-            Assert.AreEqual(parsedPrefix.LastPrefixes, "Del");
+            Assert.Equal(parsedPrefix.Title, "Mr.");
+            Assert.Equal(parsedPrefix.First, "");
+            Assert.Equal(parsedPrefix.Last, "Del Richards");
+            Assert.Equal(parsedPrefix.LastPrefixes, "Del");
 
             // A single prefix should be treated as a first name when no first exists
             var parsedFirst = new HumanName("Mr. Del Richards", Prefer.FirstOverPrefix);
-            Assert.AreEqual(parsedFirst.Title, "Mr.");
-            Assert.AreEqual(parsedFirst.First, "Del");
-            Assert.AreEqual(parsedFirst.Last, "Richards");
-            Assert.AreEqual(parsedFirst.LastPrefixes, "");
+            Assert.Equal(parsedFirst.Title, "Mr.");
+            Assert.Equal(parsedFirst.First, "Del");
+            Assert.Equal(parsedFirst.Last, "Richards");
+            Assert.Equal(parsedFirst.LastPrefixes, "");
         }
     }
 }

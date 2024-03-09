@@ -1,195 +1,193 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using NameParser;
+﻿using NameParser;
+using Xunit;
 
 namespace NameParserTest;
 
 public partial class NameParserTests
 {
-    [TestClass]
     public class SuffixesTestCase
     {
-        [TestMethod]
+        [Fact]
         public void TestSuffix()
         {
             var hn = new HumanName("Joe Franklin Jr");
-            Assert.AreEqual("Joe", hn.First);
-            Assert.AreEqual("Franklin", hn.Last);
-            Assert.AreEqual("Jr", hn.Suffix);
+            Assert.Equal("Joe", hn.First);
+            Assert.Equal("Franklin", hn.Last);
+            Assert.Equal("Jr", hn.Suffix);
         }
 
-        [TestMethod]
+        [Fact]
         public void TestSuffixWithPeriods()
         {
             var hn = new HumanName("Joe Dentist D.D.S.");
-            Assert.AreEqual("Joe", hn.First);
-            Assert.AreEqual("Dentist", hn.Last);
-            Assert.AreEqual("D.D.S.", hn.Suffix);
+            Assert.Equal("Joe", hn.First);
+            Assert.Equal("Dentist", hn.Last);
+            Assert.Equal("D.D.S.", hn.Suffix);
         }
 
-        [TestMethod]
+        [Fact]
         public void TestTwoSuffixes()
         {
             var hn = new HumanName("Kenneth Clarke QC MP");
-            Assert.AreEqual("Kenneth", hn.First);
-            Assert.AreEqual("Clarke", hn.Last);
+            Assert.Equal("Kenneth", hn.First);
+            Assert.Equal("Clarke", hn.Last);
             // NOTE: this adds a comma when the original format did not have one.
             // not ideal but at least its in the right bucket
-            Assert.AreEqual("QC, MP", hn.Suffix);
+            Assert.Equal("QC, MP", hn.Suffix);
         }
 
-        [TestMethod]
+        [Fact]
         public void TestTwoSuffixesLastnameCommaFormat()
         {
             var hn = new HumanName("Washington Jr. MD, Franklin");
-            Assert.AreEqual("Franklin", hn.First);
-            Assert.AreEqual("Washington", hn.Last);
+            Assert.Equal("Franklin", hn.First);
+            Assert.Equal("Washington", hn.Last);
             // NOTE: this adds a comma when the original format did not have one.
-            Assert.AreEqual("Jr., MD", hn.Suffix);
+            Assert.Equal("Jr., MD", hn.Suffix);
         }
 
-        [TestMethod]
+        [Fact]
         public void TestTwoSuffixesSuffixCommaFormat()
         {
             var hn = new HumanName("Franklin Washington, Jr. MD");
-            Assert.AreEqual("Franklin", hn.First);
-            Assert.AreEqual("Washington", hn.Last);
-            Assert.AreEqual("Jr. MD", hn.Suffix);
+            Assert.Equal("Franklin", hn.First);
+            Assert.Equal("Washington", hn.Last);
+            Assert.Equal("Jr. MD", hn.Suffix);
         }
 
-        [TestMethod]
+        [Fact]
         public void TestSuffixContainingPeriods()
         {
             var hn = new HumanName("Kenneth Clarke Q.C.");
-            Assert.AreEqual("Kenneth", hn.First);
-            Assert.AreEqual("Clarke", hn.Last);
-            Assert.AreEqual("Q.C.", hn.Suffix);
+            Assert.Equal("Kenneth", hn.First);
+            Assert.Equal("Clarke", hn.Last);
+            Assert.Equal("Q.C.", hn.Suffix);
         }
 
-        [TestMethod]
+        [Fact]
         public void TestSuffixContainingPeriodsLastnameCommaFormat()
         {
             var hn = new HumanName("Clarke, Kenneth, Q.C. M.P.");
-            Assert.AreEqual("Kenneth", hn.First);
-            Assert.AreEqual("Clarke", hn.Last);
-            Assert.AreEqual("Q.C. M.P.", hn.Suffix);
+            Assert.Equal("Kenneth", hn.First);
+            Assert.Equal("Clarke", hn.Last);
+            Assert.Equal("Q.C. M.P.", hn.Suffix);
         }
 
-        [TestMethod]
+        [Fact]
         public void TestSuffixContainingPeriodsSuffixCommaFormat()
         {
             var hn = new HumanName("Kenneth Clarke Q.C., M.P.");
-            Assert.AreEqual("Kenneth", hn.First);
-            Assert.AreEqual("Clarke", hn.Last);
-            Assert.AreEqual("Q.C., M.P.", hn.Suffix);
+            Assert.Equal("Kenneth", hn.First);
+            Assert.Equal("Clarke", hn.Last);
+            Assert.Equal("Q.C., M.P.", hn.Suffix);
         }
 
-        [TestMethod]
+        [Fact]
         public void TestSuffixWithSingleCommaFormat()
         {
             var hn = new HumanName("John Doe jr., MD");
-            Assert.AreEqual("John", hn.First);
-            Assert.AreEqual("Doe", hn.Last);
-            Assert.AreEqual("jr., MD", hn.Suffix);
+            Assert.Equal("John", hn.First);
+            Assert.Equal("Doe", hn.Last);
+            Assert.Equal("jr., MD", hn.Suffix);
         }
 
-        [TestMethod]
+        [Fact]
         public void TestSuffixWithDoubleCommaFormat()
         {
             var hn = new HumanName("Doe, John jr., MD");
-            Assert.AreEqual("John", hn.First);
-            Assert.AreEqual("Doe", hn.Last);
-            Assert.AreEqual("jr., MD", hn.Suffix);
+            Assert.Equal("John", hn.First);
+            Assert.Equal("Doe", hn.Last);
+            Assert.Equal("jr., MD", hn.Suffix);
         }
 
-        [TestMethod]
+        [Fact]
         public void TestPhdWithErroneousSpace()
         {
             var hn = new HumanName("John Smith, Ph. D.");
-            Assert.AreEqual("John", hn.First);
-            Assert.AreEqual("Smith", hn.Last);
-            Assert.AreEqual("Ph. D.", hn.Suffix);
+            Assert.Equal("John", hn.First);
+            Assert.Equal("Smith", hn.Last);
+            Assert.Equal("Ph. D.", hn.Suffix);
         }
 
-        [TestMethod]
+        [Fact]
         public void TestPhdConflict()
         {
             var hn = new HumanName("Adolph D");
-            Assert.AreEqual("Adolph", hn.First);
-            Assert.AreEqual("D", hn.Last);
+            Assert.Equal("Adolph", hn.First);
+            Assert.Equal("D", hn.Last);
 
             // http://en.wikipedia.org/wiki/Ma_(surname);
         }
 
-        [TestMethod]
+        [Fact]
         public void TestPotentialSuffixThatIsAlsoLastName()
         {
             var hn = new HumanName("Jack Ma");
-            Assert.AreEqual("Jack", hn.First);
-            Assert.AreEqual("Ma", hn.Last);
+            Assert.Equal("Jack", hn.First);
+            Assert.Equal("Ma", hn.Last);
         }
 
-        [TestMethod]
+        [Fact]
         public void TestPotentialSuffixThatIsAlsoLastNameComma()
         {
             var hn = new HumanName("Ma, Jack");
-            Assert.AreEqual("Jack", hn.First);
-            Assert.AreEqual("Ma", hn.Last);
+            Assert.Equal("Jack", hn.First);
+            Assert.Equal("Ma", hn.Last);
         }
 
-        [TestMethod]
+        [Fact]
         public void TestPotentialSuffixThatIsAlsoLastNameWithSuffix()
         {
             var hn = new HumanName("Jack Ma Jr");
-            Assert.AreEqual("Jack", hn.First);
-            Assert.AreEqual("Ma", hn.Last);
-            Assert.AreEqual("Jr", hn.Suffix);
+            Assert.Equal("Jack", hn.First);
+            Assert.Equal("Ma", hn.Last);
+            Assert.Equal("Jr", hn.Suffix);
         }
 
-        [TestMethod]
+        [Fact]
         public void TestPotentialSuffixThatIsAlsoLastNameWithSuffixComma()
         {
             var hn = new HumanName("Ma III, Jack Jr");
-            Assert.AreEqual("Jack", hn.First);
-            Assert.AreEqual("Ma", hn.Last);
-            Assert.AreEqual("III, Jr", hn.Suffix);
+            Assert.Equal("Jack", hn.First);
+            Assert.Equal("Ma", hn.Last);
+            Assert.Equal("III, Jr", hn.Suffix);
         }
 
         // https://github.com/derek73/python-nameparser/issues/27
-        [Ignore("Expected failure")]
-        [TestMethod]
+        [Fact(Skip = "Expected failure")]
         public void TestKing()
         {
             var hn = new HumanName("Dr King Jr");
-            Assert.AreEqual("Dr", hn.Title);
-            Assert.AreEqual("King", hn.Last);
-            Assert.AreEqual("Jr", hn.Suffix);
+            Assert.Equal("Dr", hn.Title);
+            Assert.Equal("King", hn.Last);
+            Assert.Equal("Jr", hn.Suffix);
         }
 
-        [TestMethod]
+        [Fact]
         public void TestMultipleLetterSuffixWithPeriods()
         {
             var hn = new HumanName("John Doe Msc.Ed.");
-            Assert.AreEqual("John", hn.First);
-            Assert.AreEqual("Doe", hn.Last);
-            Assert.AreEqual("Msc.Ed.", hn.Suffix);
+            Assert.Equal("John", hn.First);
+            Assert.Equal("Doe", hn.Last);
+            Assert.Equal("Msc.Ed.", hn.Suffix);
         }
 
-        [TestMethod]
+        [Fact]
         public void TestSuffixWithPeriodsWithComma()
         {
             var hn = new HumanName("John Doe, Msc.Ed.");
-            Assert.AreEqual("John", hn.First);
-            Assert.AreEqual("Doe", hn.Last);
-            Assert.AreEqual("Msc.Ed.", hn.Suffix);
+            Assert.Equal("John", hn.First);
+            Assert.Equal("Doe", hn.Last);
+            Assert.Equal("Msc.Ed.", hn.Suffix);
         }
 
-        [TestMethod]
+        [Fact]
         public void TestSuffixWithPeriodsWithLastnameComma()
         {
             var hn = new HumanName("Doe, John Msc.Ed.");
-            Assert.AreEqual("John", hn.First);
-            Assert.AreEqual("Doe", hn.Last);
-            Assert.AreEqual("Msc.Ed.", hn.Suffix);
+            Assert.Equal("John", hn.First);
+            Assert.Equal("Doe", hn.Last);
+            Assert.Equal("Msc.Ed.", hn.Suffix);
         }
     }
 }

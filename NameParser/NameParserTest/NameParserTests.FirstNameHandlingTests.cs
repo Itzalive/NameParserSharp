@@ -1,106 +1,103 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using NameParser;
+﻿using NameParser;
+using Xunit;
 
 namespace NameParserTest;
 
 public partial class NameParserTests
 {
-    [TestClass]
     public class FirstNameHandlingTests
     {
-        [TestMethod]
+        [Fact]
         public void TestFirstName()
         {
             var hn = new HumanName("Andrew");
-            Assert.AreEqual("Andrew", hn.First);
+            Assert.Equal("Andrew", hn.First);
         }
 
-        [TestMethod]
+        [Fact]
         public void TestAssumeTitleAndOneOtherNameIsLastName()
         {
             var hn = new HumanName("Rev Andrews");
-            Assert.AreEqual("Rev", hn.Title);
-            Assert.AreEqual("Andrews", hn.Last);
+            Assert.Equal("Rev", hn.Title);
+            Assert.Equal("Andrews", hn.Last);
         }
 
         // TODO: Seems "Andrews, M.D.", Andrews should be treated as a last name
         // but other suffixes like "George Jr." should be first names. Might be
         // related to https://github.com/derek73/python-nameparser/issues/2
-        [Ignore("Expect failure")]
-        [TestMethod]
+        [Fact(Skip = "Expected failure")]
         public void TestAssumeSuffixTitleAndOneOtherNameIsLastName()
         {
             var hn = new HumanName("Andrews, M.D.");
-            Assert.AreEqual("M.D.", hn.Suffix);
-            Assert.AreEqual("Andrews", hn.Last);
+            Assert.Equal("M.D.", hn.Suffix);
+            Assert.Equal("Andrews", hn.Last);
         }
 
-        [TestMethod]
+        [Fact]
         public void TestSuffixInLastnamePartOfLastnameCommaFormat()
         {
             var hn = new HumanName("Smith Jr., John");
-            Assert.AreEqual("Smith", hn.Last);
-            Assert.AreEqual("John", hn.First);
-            Assert.AreEqual("Jr.", hn.Suffix);
+            Assert.Equal("Smith", hn.Last);
+            Assert.Equal("John", hn.First);
+            Assert.Equal("Jr.", hn.Suffix);
         }
 
-        [TestMethod]
+        [Fact]
         public void TestSirExceptionToFirstNameRule()
         {
             var hn = new HumanName("Sir Gerald");
-            Assert.AreEqual("Sir", hn.Title);
-            Assert.AreEqual("Gerald", hn.First);
+            Assert.Equal("Sir", hn.Title);
+            Assert.Equal("Gerald", hn.First);
         }
 
-        [TestMethod]
+        [Fact]
         public void TestKingExceptionToFirstNameRule()
         {
             var hn = new HumanName("King Henry");
-            Assert.AreEqual("King", hn.Title);
-            Assert.AreEqual("Henry", hn.First);
+            Assert.Equal("King", hn.Title);
+            Assert.Equal("Henry", hn.First);
         }
 
-        [TestMethod]
+        [Fact]
         public void TestQueenExceptionToFirstNameRule()
         {
             var hn = new HumanName("Queen Elizabeth");
-            Assert.AreEqual("Queen", hn.Title);
-            Assert.AreEqual("Elizabeth", hn.First);
+            Assert.Equal("Queen", hn.Title);
+            Assert.Equal("Elizabeth", hn.First);
         }
 
-        [TestMethod]
+        [Fact]
         public void TestDameExceptionToFirstNameRule()
         {
             var hn = new HumanName("Dame Mary");
-            Assert.AreEqual("Dame", hn.Title);
-            Assert.AreEqual("Mary", hn.First);
+            Assert.Equal("Dame", hn.Title);
+            Assert.Equal("Mary", hn.First);
         }
 
-        [TestMethod]
+        [Fact]
         public void TestFirstNameIsNotPrefixIfOnlyTwoParts()
         {
             // When there are only two parts, don't join prefixes or conjunctions
             var hn = new HumanName("Van Nguyen");
-            Assert.AreEqual("Van", hn.First);
-            Assert.AreEqual("Nguyen", hn.Last);
+            Assert.Equal("Van", hn.First);
+            Assert.Equal("Nguyen", hn.Last);
         }
 
-        [TestMethod]
+        [Fact]
         public void TestFirstNameIsNotPrefixIfOnlyTwoPartsComma()
         {
             var hn = new HumanName("Nguyen, Van");
-            Assert.AreEqual("Van", hn.First);
-            Assert.AreEqual("Nguyen", hn.Last);
+            Assert.Equal("Van", hn.First);
+            Assert.Equal("Nguyen", hn.Last);
         }
 
-[Ignore("Expected failure")]
-        [TestMethod]
+        [Fact(Skip = "Expected failure")]
         public void TestFirstNameIsPrefixIfThreeParts()
         {
             //"""Not sure how to fix this without breaking Mr and Mrs"""
             var hn = new HumanName("Mr. Van Nguyen");
-            Assert.AreEqual("Van", hn.First);
-            Assert.AreEqual("Nguyen", hn.Last);
+            Assert.Equal("Van", hn.First);
+            Assert.Equal("Nguyen", hn.Last);
         }
     }
 }
