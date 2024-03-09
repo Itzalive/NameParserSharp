@@ -1,4 +1,4 @@
-﻿namespace NameParser
+﻿namespace NameParser.Benchmarks.Baseline
 {
     using System;
     using System.Collections.Concurrent;
@@ -26,7 +26,7 @@
         public static readonly ISet<string> Conjunctions = new HashSet<string>
             { "&", "and", "et", "e", "of", "the", "und", "y" };
 
-        public static readonly ConcurrentBag<string> CombinedConjunctions = [];
+        public readonly ConcurrentBag<string> CombinedConjunctions = [];
 
 
         /// <summary>
@@ -724,7 +724,7 @@
             "v",
         };
 
-        public static readonly ConcurrentBag<string> CombinedSuffixesNotAcronyms = [];
+        public readonly ConcurrentBag<string> CombinedSuffixesNotAcronyms = [];
         
         ///<summary>
         /// When these titles appear with a single other name, that name is a first name, e.g.
@@ -1390,7 +1390,7 @@
             "zoologist",
         };
 
-        public static readonly ConcurrentBag<string> CombinedTitles = [];
+        public readonly ConcurrentBag<string> CombinedTitles = [];
 
         private static readonly Regex RegexSpaces = new Regex(@"\s+", RegexOptions.None, TimeSpan.FromMilliseconds(100));
 

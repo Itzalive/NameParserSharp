@@ -1,69 +1,55 @@
-﻿namespace NameParser
-{
-    using System;
-    using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Text;
 
-    internal static class EnumerableExtensions
+namespace NameParser;
+
+public static class EnumerableExtensions
+{
+    public static IEnumerable<(int First, int Last)> ConsecutiveRanges(this IEnumerable<int> source)
     {
-        public static IEnumerable<(int First, int Last)> ConsecutiveRanges(this IEnumerable<int> source)
+        using (var e = source.GetEnumerator())
         {
-            using (var e = source.GetEnumerator())
+            for (bool more = e.MoveNext(); more;)
             {
-                for (bool more = e.MoveNext(); more;)
-                {
-                    int first = e.Current, last = first, next;
-                    while ((more = e.MoveNext()) && (next = e.Current) > last && next - last == 1)
-                        last = next;
-                    yield return (first, last);
-                }
+                int first = e.Current, last = first, next;
+                while ((more = e.MoveNext()) && (next = e.Current) > last && next - last == 1)
+                    last = next;
+                yield return (first, last);
             }
         }
     }
+}
 
-    public static class StringExtensions
+public static class StringExtensions
+{
+    public static IEnumerable<ReadOnlyMemory<char>> SplitToSpan(this ReadOnlyMemory<char> value, char delimiter)
     {
-        public static LineSplitEnumerator SplitToSpan(this string str, char delimiter)
+        var last = -1;
+        for (var i = 0; i < value.Length; i++)
         {
-            // LineSplitEnumerator is a struct so there is no allocation here
-            return new LineSplitEnumerator(str.AsSpan(), delimiter);
+            if (value.Span[i] == delimiter && i > last + 1)
+            {
+                yield return value[(last + 1)..i];
+                last = i;
+            }
         }
 
-        // Must be a ref struct as it contains a ReadOnlySpan<char>
-        public ref struct LineSplitEnumerator
+        if (last < value.Length - 1)
+            yield return value[(last + 1)..];
+    }
+
+    public static string RemoveCharacter(this ReadOnlyMemory<char> value, char character)
+    {
+        StringBuilder sb = new StringBuilder();
+        ReadOnlySpan<char> span = value.Span;
+        for (var i = 0; i < value.Length; i++)
         {
-            private ReadOnlySpan<char> str;
-            private readonly char delimiter;
-
-            public LineSplitEnumerator(ReadOnlySpan<char> str, char delimiter)
+            if (span[i] != character)
             {
-                this.str = str;
-                this.delimiter = delimiter;
-                Current = default;
+                sb.Append(character);
             }
-
-            // Needed to be compatible with the foreach operator
-            public LineSplitEnumerator GetEnumerator() => this;
-
-            public bool MoveNext()
-            {
-                var span = str;
-                if (span.Length == 0) // Reach the end of the string
-                    return false;
-
-                var index = span.IndexOf(delimiter);
-                if (index == -1) // The string is composed of only one line
-                {
-                    str = ReadOnlySpan<char>.Empty; // The remaining string is an empty string
-                    Current = span;
-                    return true;
-                }
-
-                Current = span[..index];
-                str = span[(index + 1)..];
-                return true;
-            }
-
-            public ReadOnlySpan<char> Current { get; private set; }
         }
+        return sb.ToString();
     }
 }
