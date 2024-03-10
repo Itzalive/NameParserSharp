@@ -209,5 +209,8 @@ namespace NameParser.Benchmarks
 
         [Benchmark(OperationsPerInvoke = 172)]
         public void UsingSpansCached3() => ParseNames(v => new SpanCached3.HumanName(v));
+
+        [Benchmark(OperationsPerInvoke = 172)]
+        public void UsingSpansCached4() => ParseNames(v => new SpanCached4.HumanName(v));
     }
 }
