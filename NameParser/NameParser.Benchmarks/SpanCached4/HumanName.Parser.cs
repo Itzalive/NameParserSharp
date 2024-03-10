@@ -228,7 +228,6 @@ public partial class HumanName
                     }
                     else
                     {
-
                         sb.Append(characters[(lastWhitespace + 1)..i]);
                         sb.Append(' ');
                     }
@@ -681,7 +680,7 @@ public partial class HumanName
         foreach (var (first, last) in contiguousConjunctionIndexRanges)
         {
             if (first == last) continue;
-            var newPiece = new Piece(string.Join(" ", pieces.Skip(first).Take(last - first + 1).Select(p => p.String)), isConjunction: true);
+            var newPiece = new Piece(string.Join(" ", pieces.Skip(first).Take(last - first + 1).Select(p => p.Span)), isConjunction: true);
             toDelete.AddRange(Enumerable.Range(first + 1, last - first));
             pieces[first] = newPiece;
         }
@@ -719,7 +718,7 @@ public partial class HumanName
 
             if (i == 0)
             {
-                var newPiece = new Piece(string.Join(" ", pieces.Skip(i).Take(2).Select(p => p.String)));
+                var newPiece = new Piece(string.Join(" ", pieces.Skip(i).Take(2).Select(p => p.Span)));
                 if (pieces[i + 1].IsTitle())
                 {
                     newPiece.OverrideIsTitle();
@@ -735,7 +734,7 @@ public partial class HumanName
             }
             else
             {
-                var newPiece = new Piece(string.Join(" ", pieces.Skip(i - 1).Take(3).Select(p => p.String)));
+                var newPiece = new Piece(string.Join(" ", pieces.Skip(i - 1).Take(3).Select(p => p.Span)));
                 if (pieces[i - 1].IsTitle())
                 {
                     newPiece.OverrideIsTitle();
@@ -782,7 +781,7 @@ public partial class HumanName
                             j++;
                         }
 
-                        var newPiece = new Piece(string.Join(" ", pieces.Skip(i).Take(j - i).Select(p => p.String)));
+                        var newPiece = new Piece(string.Join(" ", pieces.Skip(i).Take(j - i).Select(p => p.Span)));
                         pieces = pieces
                             .Take(i)
                             .Concat([newPiece])
@@ -800,7 +799,7 @@ public partial class HumanName
                     if (nextSuffix.Length > 0)
                     {
                         var j = pieces.IndexOf(nextSuffix[0]);
-                        var newPiece = new Piece(string.Join(" ", pieces.Skip(i).Take(j - i).Select(p => p.String)));
+                        var newPiece = new Piece(string.Join(" ", pieces.Skip(i).Take(j - i).Select(p => p.Span)));
 
                         pieces = pieces
                             .Take(i)
@@ -810,7 +809,7 @@ public partial class HumanName
                     }
                     else
                     {
-                        var newPiece = new Piece(string.Join(" ", pieces.Skip(i).Select(p => p.String)));
+                        var newPiece = new Piece(string.Join(" ", pieces.Skip(i).Select(p => p.Span)));
                         pieces = pieces.Take(i).Concat([newPiece]).ToList();
                     }
                 }

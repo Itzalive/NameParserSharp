@@ -116,7 +116,7 @@ public partial class HumanName
                && left.Last == right.Last
                && left.Suffix == right.Suffix
                &&
-               (string.IsNullOrEmpty(left.Nickname) || string.IsNullOrEmpty(right.Nickname) ||
+               (!left._NicknameList.Any() || !right._NicknameList.Any() ||
                 left.Nickname == right.Nickname);
     }
 
@@ -134,42 +134,42 @@ public partial class HumanName
     {
         var d = new Dictionary<string, string>();
 
-        if (includeEmpty || !string.IsNullOrEmpty(Title))
+        if (includeEmpty || _TitleList.Any())
         {
             d["title"] = Title;
         }
 
-        if (includeEmpty || !string.IsNullOrEmpty(First))
+        if (includeEmpty || _FirstList.Any())
         {
             d["first"] = First;
         }
 
-        if (includeEmpty || !string.IsNullOrEmpty(Middle))
+        if (includeEmpty || _MiddleList.Any())
         {
             d["middle"] = Middle;
         }
 
-        if (includeEmpty || !string.IsNullOrEmpty(Last))
+        if (includeEmpty || _LastList.Any())
         {
             d["last"] = Last;
         }
 
-        if (includeEmpty || !string.IsNullOrEmpty(LastBase))
+        if (includeEmpty || _LastBaseList.Any())
         {
             d["lastbase"] = LastBase;
         }
 
-        if (includeEmpty || !string.IsNullOrEmpty(LastPrefixes))
+        if (includeEmpty || _LastPrefixList.Any())
         {
             d["lastprefixes"] = LastPrefixes;
         }
 
-        if (includeEmpty || !string.IsNullOrEmpty(Suffix))
+        if (includeEmpty || _SuffixList.Any())
         {
             d["suffix"] = Suffix;
         }
 
-        if (includeEmpty || !string.IsNullOrEmpty(Nickname))
+        if (includeEmpty || _NicknameList.Any())
         {
             d["nickname"] = Nickname;
         }
@@ -230,7 +230,6 @@ public partial class HumanName
                     }
                     else
                     {
-
                         sb.Append(characters[(lastWhitespace + 1)..i]);
                         sb.Append(' ');
                     }
@@ -250,7 +249,7 @@ public partial class HumanName
     /// </summary>
     private void PostProcessFirstnames()
     {
-        if (!string.IsNullOrEmpty(Title)
+        if (_TitleList.Any()
             && !FirstNameTitles.Contains(Title.ToLower())
             && 1 == _FirstList.Count + _LastList.Count)
         {
@@ -313,7 +312,7 @@ public partial class HumanName
         // Often, the secondary in a pair of names will contain the last name but not the primary.
         // (eg, John D. and Catherine T. MacArthur). In this case, we should be able to infer
         // the primary's last name from the secondary.
-        if (string.IsNullOrEmpty(Last))
+        if (!_LastList.Any())
         {
             _LastList = AdditionalName._LastList;
         }
@@ -321,7 +320,7 @@ public partial class HumanName
         {
             // for names like "Smith, John And Jane", we'd have to propagate the name backward (possibly through multiple names)
             var next = AdditionalName;
-            while (next != null && string.IsNullOrEmpty(next.Last))
+            while (next != null && !next._LastList.Any())
             {
                 next._LastList = _LastList;
                 next = next.AdditionalName;
@@ -465,7 +464,7 @@ public partial class HumanName
                     var piece = pieces[i];
                     var nxt = i == pieces.Count - 1 ? null : pieces[i + 1];
 
-                    if (string.IsNullOrEmpty(First))
+                    if (!_FirstList.Any())
                     {
                         if ((nxt != null || pieces.Count == 1) && piece.IsTitle())
                         {
@@ -598,7 +597,6 @@ public partial class HumanName
         }
 
         nicknameList = new List<Piece>();
-
         foreach (var regex in new[] { RegexQuotedWord, RegexDoubleQuotes, RegexParenthesis })
         {
             var match = regex.Match(fullName);
@@ -684,7 +682,7 @@ public partial class HumanName
         foreach (var (first, last) in contiguousConjunctionIndexRanges)
         {
             if (first == last) continue;
-            var newPiece = new Piece(string.Join(" ", pieces.Skip(first).Take(last - first + 1).Select(p => p.String)), isConjunction: true);
+            var newPiece = new Piece(string.Join(" ", pieces.Skip(first).Take(last - first + 1).Select(p => p.Span)), isConjunction: true);
             toDelete.AddRange(Enumerable.Range(first + 1, last - first));
             pieces[first] = newPiece;
         }
@@ -722,7 +720,7 @@ public partial class HumanName
 
             if (i == 0)
             {
-                var newPiece = new Piece(string.Join(" ", pieces.Skip(i).Take(2).Select(p => p.String)));
+                var newPiece = new Piece(string.Join(" ", pieces.Skip(i).Take(2).Select(p => p.Span)));
                 if (pieces[i + 1].IsTitle())
                 {
                     newPiece.OverrideIsTitle();
@@ -738,7 +736,7 @@ public partial class HumanName
             }
             else
             {
-                var newPiece = new Piece(string.Join(" ", pieces.Skip(i - 1).Take(3).Select(p => p.String)));
+                var newPiece = new Piece(string.Join(" ", pieces.Skip(i - 1).Take(3).Select(p => p.Span)));
                 if (pieces[i - 1].IsTitle())
                 {
                     newPiece.OverrideIsTitle();
@@ -785,7 +783,7 @@ public partial class HumanName
                             j++;
                         }
 
-                        var newPiece = new Piece(string.Join(" ", pieces.Skip(i).Take(j - i).Select(p => p.String)));
+                        var newPiece = new Piece(string.Join(" ", pieces.Skip(i).Take(j - i).Select(p => p.Span)));
                         pieces = pieces
                             .Take(i)
                             .Concat([newPiece])
@@ -803,7 +801,7 @@ public partial class HumanName
                     if (nextSuffix.Length > 0)
                     {
                         var j = pieces.IndexOf(nextSuffix[0]);
-                        var newPiece = new Piece(string.Join(" ", pieces.Skip(i).Take(j - i).Select(p => p.String)));
+                        var newPiece = new Piece(string.Join(" ", pieces.Skip(i).Take(j - i).Select(p => p.Span)));
 
                         pieces = pieces
                             .Take(i)
@@ -813,7 +811,7 @@ public partial class HumanName
                     }
                     else
                     {
-                        var newPiece = new Piece(string.Join(" ", pieces.Skip(i).Select(p => p.String)));
+                        var newPiece = new Piece(string.Join(" ", pieces.Skip(i).Select(p => p.Span)));
                         pieces = pieces.Take(i).Concat([newPiece]).ToList();
                     }
                 }

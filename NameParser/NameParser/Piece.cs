@@ -76,14 +76,14 @@ namespace NameParser
             {
                 // split on periods, any of the split pieces titles or suffixes?
                 // ("Lt.Gov.")
-                var periodChunks = this.Span.SplitToSpan('.');
+                var periodChunks = this.Span.SplitToSpan('.').Select(p => new Piece(p));
 
                 // add the part to the constant so it will be found
-                if (periodChunks.Any(p => new Piece(p).IsTitle()))
+                if (periodChunks.Any(p => p.IsTitle()))
                 {
                     this.isTitle = true;
                 }
-                else if (periodChunks.Any(p => new Piece(p).IsSuffix()))
+                else if (periodChunks.Any(p => p.IsSuffix()))
                 {
                     this.isSuffix = true;
                 }
