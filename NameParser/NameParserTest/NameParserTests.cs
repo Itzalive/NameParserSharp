@@ -353,7 +353,7 @@ namespace NameParserTest
             Assert.Equal("", asIs.Suffix);
 
 
-            HumanName.Suffixes.Add("2nd");
+            Piece.Suffixes.Add("2nd");
             var with2Nd = new HumanName("Mr. John Smith 2nd");
             Assert.Equal("Mr.", with2Nd.Title);
             Assert.Equal("John", with2Nd.First);

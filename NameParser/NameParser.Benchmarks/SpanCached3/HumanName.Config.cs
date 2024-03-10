@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text.RegularExpressions;
-
-namespace NameParser;
+﻿namespace NameParser.Benchmarks.SpanCached3;
 
 using System;
 using System.Collections.Concurrent;
@@ -1360,8 +1356,7 @@ public partial class Piece
         new Regex(@"^(\w\.|[A-Z])?$", RegexOptions.None, TimeSpan.FromMilliseconds(100));
 }
 
-public partial class HumanName
-{
+public partial class HumanName {
     /// <summary>
     /// Any pieces that are not capitalized by capitalizing the first letter.
     /// </summary>
@@ -1416,7 +1411,7 @@ public partial class HumanName
 
     private static readonly Regex RegexQuotedWord = new Regex(@"(?<!\w)\'([^\s]*?)\'(?!\w)",
         RegexOptions.None, TimeSpan.FromMilliseconds(100));
-
+    
     private static readonly Regex RegexDoubleQuotes = new Regex(@"\""(.*?)\""",
         RegexOptions.None, TimeSpan.FromMilliseconds(100));
 

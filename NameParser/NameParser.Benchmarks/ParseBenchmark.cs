@@ -6,6 +6,7 @@ namespace NameParser.Benchmarks
 {
     [SimpleJob(RuntimeMoniker.Net60, baseline: true)]
     [SimpleJob(RuntimeMoniker.Net80)]
+    [MemoryDiagnoser(false)]
     public class ParseBenchmark
     {
         private static readonly string[] testNames = [
@@ -199,5 +200,14 @@ namespace NameParser.Benchmarks
 
         [Benchmark(OperationsPerInvoke = 172)]
         public void UsingSpans() => ParseNames(v => new Span.HumanName(v));
+
+        [Benchmark(OperationsPerInvoke = 172)]
+        public void UsingSpansCached() => ParseNames(v => new SpanCached.HumanName(v));
+
+        [Benchmark(OperationsPerInvoke = 172)]
+        public void UsingSpansCached2() => ParseNames(v => new SpanCached2.HumanName(v));
+
+        [Benchmark(OperationsPerInvoke = 172)]
+        public void UsingSpansCached3() => ParseNames(v => new SpanCached3.HumanName(v));
     }
 }

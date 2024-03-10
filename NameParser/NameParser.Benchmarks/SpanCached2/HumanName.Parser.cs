@@ -1,8 +1,6 @@
-using System.Collections.Generic;
 using System.Linq;
-using System;
 
-namespace NameParser;
+namespace NameParser.Benchmarks.SpanCached2;
 
 /// <summary>
 /// Parse a person's name into individual components.
@@ -48,17 +46,17 @@ public partial class HumanName
         }
     }
 
-    public string Title => string.Join(" ", _TitleList.Select(p => p.String));
+    public string Title => string.Join(" ", _TitleList);
 
-    public string First => string.Join(" ", _FirstList.Select(p => p.String));
+    public string First => string.Join(" ", _FirstList);
 
-    public string Middle => string.Join(" ", _MiddleList.Select(p => p.String));
+    public string Middle => string.Join(" ", _MiddleList);
 
-    public string Last => string.Join(" ", _LastList.Select(p => p.String));
+    public string Last => string.Join(" ", _LastList);
 
-    public string Suffix => string.Join(", ", _SuffixList.Select(p => p.String));
+    public string Suffix => string.Join(", ", _SuffixList);
 
-    public string Nickname => string.Join(" ", _NicknameList.Select(p => p.String));
+    public string Nickname => string.Join(" ", _NicknameList);
 
     /// <summary>
     /// If <see cref="ParseMultipleNames"/> is true and the input contains "&" or "and", the additional
@@ -68,8 +66,8 @@ public partial class HumanName
     /// </summary>
     public HumanName? AdditionalName { get; private set; }
 
-    public string LastBase => string.Join(" ", _LastBaseList.Select(p => p.String));
-    public string LastPrefixes => string.Join(" ", _LastPrefixList.Select(p => p.String));
+    public string LastBase => string.Join(" ", _LastBaseList);
+    public string LastPrefixes => string.Join(" ", _LastPrefixList);
 
     #endregion
 
@@ -186,10 +184,37 @@ public partial class HumanName
 
     #region Parse helpers
 
+    private bool IsTitle(Piece piece)
+    {
+        return Titles.Contains(piece.TrimmedLowerString) || CombinedTitles.Contains(piece.TrimmedLowerString);
+    }
+
+    private bool IsConjunction(Piece piece)
+    {
+        return (Conjunctions.Contains(piece.LowerString) || CombinedConjunctions.Contains(piece.LowerString)) && !IsAnInitial(piece.String);
+    }
+
+    private static bool IsPrefix(Piece piece)
+    {
+        return Prefixes.Contains(piece.TrimmedLowerString);
+    }
+
+    private static bool IsRomanNumeral(Piece piece)
+    {
+        return RegexRomanNumeral.IsMatch(piece.String);
+    }
+
+    private bool IsSuffix(Piece piece)
+    {
+        var removedDots = piece.TrimmedLowerString.Replace(".", string.Empty);
+        return (Suffixes.Contains(removedDots) ||
+                SuffixesNotAcronyms.Contains(piece.TrimmedLowerString) ||
+                CombinedSuffixesNotAcronyms.Contains(piece.TrimmedLowerString)) && !IsAnInitial(piece.String);
+    }
 
     private bool AreSuffixes(IEnumerable<Piece> pieces)
     {
-        return pieces.Any() && pieces.All(p => p.IsSuffix());
+        return pieces.Any() && pieces.All(IsSuffix);
     }
 
     /// <summary>
@@ -199,10 +224,23 @@ public partial class HumanName
     /// <returns>False if <see cref="piece"/> is a prefix (de, abu, bin), suffix (jr, iv, cpa), title (mr, pope), or initial (x, e.); true otherwise</returns>
     private bool IsRootname(Piece piece)
     {
-        return !piece.IsPrefix()
-               && !piece.IsSuffix()
-               && !piece.IsTitle()
-               && !piece.IsAnInitial();
+        return !Prefixes.Contains(piece.TrimmedLowerString)
+               && !Suffixes.Contains(piece.TrimmedLowerString)
+               && !SuffixesNotAcronyms.Contains(piece.TrimmedLowerString)
+               && !CombinedSuffixesNotAcronyms.Contains(piece.TrimmedLowerString)
+               && !Titles.Contains(piece.TrimmedLowerString)
+               && !CombinedTitles.Contains(piece.TrimmedLowerString)
+               && !IsAnInitial(piece.String);
+    }
+
+    /// <summary>
+    /// Words with a single period at the end, or a single uppercase letter.
+    /// </summary>
+    /// <param name="value"></param>
+    /// <returns>True if <see cref="value"/> matches the regex "^(\w\.|[A-Z])?$"</returns>
+    private static bool IsAnInitial(string value)
+    {
+        return RegexInitial.IsMatch(value);
     }
 
     #endregion
@@ -258,7 +296,7 @@ public partial class HumanName
             .ToArray();
 
         var prefixCount = 0;
-        while (prefixCount < words.Length && words[prefixCount].IsPrefix())
+        while (prefixCount < words.Length && IsPrefix(words[prefixCount]))
         {
             prefixCount++;
         }
@@ -375,7 +413,7 @@ public partial class HumanName
                 // title must have a next piece, unless it's just a title
                 if (!this._FirstList.Any())
                 {
-                    if ((nxt != null || pieces.Count == 1) && piece.IsTitle())
+                    if ((nxt != null || pieces.Count == 1) && IsTitle(piece))
                     {
                         _TitleList.Add(piece);
                     }
@@ -390,8 +428,8 @@ public partial class HumanName
                 }
                 else
                 {
-                    bool isAnInitial = piece.IsAnInitial();
-                    if (AreSuffixes(pieces.Skip(i + 1)) || (nxt != null && nxt.IsRomanNumeral() && i == (pieces.Count - 2) && !isAnInitial))
+                    bool isAnInitial = IsAnInitial(piece.String);
+                    if (AreSuffixes(pieces.Skip(i + 1)) || (nxt != null && IsRomanNumeral(nxt) && i == (pieces.Count - 2) && !isAnInitial))
                     {
                         _LastList.Add(piece);
                         _SuffixList.AddRange(pieces.Skip(i + 1));
@@ -405,7 +443,7 @@ public partial class HumanName
                     else if (!ParseMultipleNames || AdditionalName == null)
                     {
                         // no additional name. some last names can appear to be suffixes. try to figure this out
-                        if (_LastList.Count > 0 && piece.IsSuffix())
+                        if (_LastList.Count > 0 && IsSuffix(piece))
                         {
                             _SuffixList.Add(piece);
                         }
@@ -444,7 +482,7 @@ public partial class HumanName
 
                     if (string.IsNullOrEmpty(First))
                     {
-                        if ((nxt != null || pieces.Count == 1) && piece.IsTitle())
+                        if ((nxt != null || pieces.Count == 1) && IsTitle(piece))
                         {
                             _TitleList.Add(piece);
                             continue;
@@ -473,7 +511,7 @@ public partial class HumanName
                         // no additional name, so treat this as a last
                         _LastList.Add(piece);
                     }
-                    else if (AdditionalName._LastList.Any() && piece.IsAnInitial())
+                    else if (AdditionalName._LastList.Any() && IsAnInitial(piece.ToString()))
                     {
                         // the additional name has a last, and this one looks like a middle. we'll save as a middle and later will copy the last name.
                         _MiddleList.Add(piece);
@@ -496,7 +534,7 @@ public partial class HumanName
                 foreach (var piece in lastnamePieces)
                 {
                     // the first one is always a last name, even if it look like a suffix
-                    if (_LastList.Any() && piece.IsSuffix())
+                    if (_LastList.Any() && IsSuffix(piece))
                     {
                         _SuffixList.Add(piece);
                     }
@@ -513,7 +551,7 @@ public partial class HumanName
 
                     if (!_FirstList.Any())
                     {
-                        if ((nxt != null || pieces.Count == 1) && piece.IsTitle())
+                        if ((nxt != null || pieces.Count == 1) && IsTitle(piece))
                         {
                             _TitleList.Add(piece);
                         }
@@ -522,7 +560,7 @@ public partial class HumanName
                             _FirstList.Add(piece);
                         }
                     }
-                    else if (piece.IsSuffix())
+                    else if (IsSuffix(piece))
                     {
                         _SuffixList.Add(piece);
                     }
@@ -600,8 +638,25 @@ public partial class HumanName
         // constants so they get parsed correctly later
         foreach (var part in output)
         {
-            part.CheckForDot();
+            // if this part has a period not at the beginning or end
+            if (part.Span.Length > 3 && part.Span.Span[1..^2].Contains('.'))
+            {
+                // split on periods, any of the split pieces titles or suffixes?
+                // ("Lt.Gov.")
+                var periodChunks = part.Span.SplitToSpan('.');
+
+                // add the part to the constant so it will be found
+                if (periodChunks.Any(p => IsTitle(new Piece(p))))
+                {
+                    CombinedTitles.Add(part.TrimmedLowerString);
+                }
+                else if (periodChunks.Any(p => IsSuffix(new Piece(p))))
+                {
+                    CombinedSuffixesNotAcronyms.Add(part.TrimmedLowerString);
+                }
+            }
         }
+
 
         return joinOnConjunctions(output, additionalPartsCount);
     }
@@ -641,7 +696,7 @@ public partial class HumanName
         // conjunctions to the piece before and after it
         var conjunctionIndexes = new List<int>();
         for (var i = 0; i < pieces.Count; i++)
-            if (pieces[i].IsConjunction())
+            if (IsConjunction(pieces[i]))
                 conjunctionIndexes.Add(i);
 
         var contiguousConjunctionIndexRanges = conjunctionIndexes.ConsecutiveRanges();
@@ -650,9 +705,10 @@ public partial class HumanName
         foreach (var (first, last) in contiguousConjunctionIndexRanges)
         {
             if (first == last) continue;
-            var newPiece = new Piece(string.Join(" ", pieces.Skip(first).Take(last - first + 1).Select(p => p.String)), isConjunction: true);
+            var newPiece = new Piece(string.Join(" ", pieces.Skip(first).Take(last - first + 1)));
             toDelete.AddRange(Enumerable.Range(first + 1, last - first));
             pieces[first] = newPiece;
+            CombinedConjunctions.Add(newPiece.LowerString);
         }
 
         toDelete.Reverse();
@@ -669,7 +725,7 @@ public partial class HumanName
 
         conjunctionIndexes = [];
         for (var i = 0; i < pieces.Count; i++)
-            if (pieces[i].IsConjunction())
+            if (IsConjunction(pieces[i]))
                 conjunctionIndexes.Add(i);
 
         for (var n = 0; n < conjunctionIndexes.Count; n++)
@@ -688,10 +744,10 @@ public partial class HumanName
 
             if (i == 0)
             {
-                var newPiece = new Piece(string.Join(" ", pieces.Skip(i).Take(2).Select(p => p.String)));
-                if (pieces[i + 1].IsTitle())
+                var newPiece = new Piece(string.Join(" ", pieces.Skip(i).Take(2)));
+                if (IsTitle(pieces[i + 1]))
                 {
-                    newPiece.OverrideIsTitle();
+                    CombinedTitles.Add(newPiece.TrimmedLowerString);
                 }
 
                 pieces[i] = newPiece;
@@ -704,10 +760,10 @@ public partial class HumanName
             }
             else
             {
-                var newPiece = new Piece(string.Join(" ", pieces.Skip(i - 1).Take(3).Select(p => p.String)));
-                if (pieces[i - 1].IsTitle())
+                var newPiece = new Piece(string.Join(" ", pieces.Skip(i - 1).Take(3)));
+                if (IsTitle(pieces[i - 1]))
                 {
-                    newPiece.OverrideIsTitle();
+                    CombinedTitles.Add(newPiece.TrimmedLowerString);
                 }
 
                 pieces[i - 1] = newPiece;
@@ -728,7 +784,7 @@ public partial class HumanName
 
         // join prefixes to following lastnames: ['de la Vega'], ['van Buren']
         // skip first part to avoid counting it as a prefix, e.g. "van" is either a first name or a preposition depending on its position
-        var prefixes = pieces.Where(p => p.IsPrefix()).ToArray();
+        var prefixes = pieces.Where(IsPrefix).ToArray();
         if (prefixes.Length > 0)
         {
             var i = 0;
@@ -743,7 +799,7 @@ public partial class HumanName
                 var matchPrefix = false;
                 for (var j = i + 1; j < pieces.Count; j++)
                 {
-                    if (pieces[j].IsPrefix())
+                    if (IsPrefix(pieces[j]))
                     {
                         matchPrefix = true;
                         if (j == i + 1)
@@ -751,7 +807,7 @@ public partial class HumanName
                             j++;
                         }
 
-                        var newPiece = new Piece(string.Join(" ", pieces.Skip(i).Take(j - i).Select(p => p.String)));
+                        var newPiece = new Piece(string.Join(" ", pieces.Skip(i).Take(j - i)));
                         pieces = pieces
                             .Take(i)
                             .Concat([newPiece])
@@ -764,12 +820,12 @@ public partial class HumanName
                 if (!matchPrefix)
                 {
                     // join everything after the prefix until the next suffix
-                    var nextSuffix = pieces.Skip(i).Where(p => p.IsSuffix()).ToArray();
+                    var nextSuffix = pieces.Skip(i).Where(IsSuffix).ToArray();
 
                     if (nextSuffix.Length > 0)
                     {
                         var j = pieces.IndexOf(nextSuffix[0]);
-                        var newPiece = new Piece(string.Join(" ", pieces.Skip(i).Take(j - i).Select(p => p.String)));
+                        var newPiece = new Piece(string.Join(" ", pieces.Skip(i).Take(j - i)));
 
                         pieces = pieces
                             .Take(i)
@@ -779,7 +835,7 @@ public partial class HumanName
                     }
                     else
                     {
-                        var newPiece = new Piece(string.Join(" ", pieces.Skip(i).Select(p => p.String)));
+                        var newPiece = new Piece(string.Join(" ", pieces.Skip(i)));
                         pieces = pieces.Take(i).Concat([newPiece]).ToList();
                     }
                 }
@@ -799,7 +855,7 @@ public partial class HumanName
     private ReadOnlyMemory<char> CapitalizeWord(ReadOnlyMemory<char> word, string attribute)
     {
         var wordLower = word.Trim('.').ToString().ToLower();
-        if ((new Piece(word).IsPrefix() && attribute is "last" or "middle") || new Piece(word).IsConjunction())
+        if ((IsPrefix(new Piece(word)) && attribute is "last" or "middle") || IsConjunction(new Piece(word)))
         {
             return wordLower.AsMemory();
         }

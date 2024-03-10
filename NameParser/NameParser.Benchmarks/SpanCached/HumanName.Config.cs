@@ -1,16 +1,25 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text.RegularExpressions;
-
-namespace NameParser;
+﻿namespace NameParser.Benchmarks.SpanCached;
 
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 
-public partial class Piece
+
+public partial class HumanName
 {
+    /// <summary>
+    /// Any pieces that are not capitalized by capitalizing the first letter.
+    /// </summary>
+    public static readonly ISet<Tuple<string, ReadOnlyMemory<char>>> CapitalizationExceptions = new HashSet<Tuple<string, ReadOnlyMemory<char>>>
+    {
+        Tuple.Create("ii", "II".AsMemory()),
+        Tuple.Create("iii", "III".AsMemory()),
+        Tuple.Create("iv", "IV".AsMemory()),
+        Tuple.Create("md", "M.D.".AsMemory()),
+        Tuple.Create("phd", "Ph.D.".AsMemory())
+    };
+
     /// <summary>
     /// Pieces that should join to their neighboring pieces, e.g. "and", "y" and "&". "of" and "the" are also include to facilitate joining multiple titles, e.g. "President of the United States".
     /// </summary>
@@ -716,6 +725,36 @@ public partial class Piece
     };
 
     public readonly HashSet<string> CombinedSuffixesNotAcronyms = [];
+    
+    ///<summary>
+    /// When these titles appear with a single other name, that name is a first name, e.g.
+    /// "Sir John", "Sister Mary", "Queen Elizabeth".
+    /// </summary>
+    private static readonly HashSet<string> FirstNameTitles = new HashSet<string>
+    {
+        "aunt",
+        "auntie",
+        "brother",
+        "dame",
+        "father",
+        "king",
+        "maid",
+        "master",
+        "mother",
+        "pope",
+        "queen",
+        "sir",
+        "sister",
+        "uncle",
+        "sheikh",
+        "sheik",
+        "shaik",
+        "shayk",
+        "shaykh",
+        "shaikh",
+        "cheikh",
+        "shekh",
+    };
 
     /// <summary>
     /// **Cannot include things that could also be first names**, e.g. "dean".
@@ -1353,57 +1392,6 @@ public partial class Piece
 
     public readonly HashSet<string> CombinedTitles = [];
 
-    private static readonly Regex RegexRomanNumeral = new Regex(@"^(X|IX|IV|V?I{0,3})$", RegexOptions.IgnoreCase,
-        TimeSpan.FromMilliseconds(100));
-
-    private static readonly Regex RegexInitial =
-        new Regex(@"^(\w\.|[A-Z])?$", RegexOptions.None, TimeSpan.FromMilliseconds(100));
-}
-
-public partial class HumanName
-{
-    /// <summary>
-    /// Any pieces that are not capitalized by capitalizing the first letter.
-    /// </summary>
-    public static readonly ISet<Tuple<string, ReadOnlyMemory<char>>> CapitalizationExceptions = new HashSet<Tuple<string, ReadOnlyMemory<char>>>
-    {
-        Tuple.Create("ii", "II".AsMemory()),
-        Tuple.Create("iii", "III".AsMemory()),
-        Tuple.Create("iv", "IV".AsMemory()),
-        Tuple.Create("md", "M.D.".AsMemory()),
-        Tuple.Create("phd", "Ph.D.".AsMemory())
-    };
-
-    ///<summary>
-    /// When these titles appear with a single other name, that name is a first name, e.g.
-    /// "Sir John", "Sister Mary", "Queen Elizabeth".
-    /// </summary>
-    private static readonly HashSet<string> FirstNameTitles = new HashSet<string>
-    {
-        "aunt",
-        "auntie",
-        "brother",
-        "dame",
-        "father",
-        "king",
-        "maid",
-        "master",
-        "mother",
-        "pope",
-        "queen",
-        "sir",
-        "sister",
-        "uncle",
-        "sheikh",
-        "sheik",
-        "shaik",
-        "shayk",
-        "shaykh",
-        "shaikh",
-        "cheikh",
-        "shekh",
-    };
-
     private static readonly Regex RegexSpaces = new Regex(@"\s+", RegexOptions.None, TimeSpan.FromMilliseconds(100));
 
     private static readonly Regex RegexWord = new Regex("(\\w|\\.)+", RegexOptions.None, TimeSpan.FromMilliseconds(100));
@@ -1414,14 +1402,20 @@ public partial class HumanName
     private static readonly Regex RegexMac =
         new Regex(@"^(ma?c)(\w{2,})", RegexOptions.IgnoreCase, TimeSpan.FromMilliseconds(100));
 
+    private static readonly Regex RegexInitial =
+        new Regex(@"^(\w\.|[A-Z])?$", RegexOptions.None, TimeSpan.FromMilliseconds(100));
+    
     private static readonly Regex RegexQuotedWord = new Regex(@"(?<!\w)\'([^\s]*?)\'(?!\w)",
         RegexOptions.None, TimeSpan.FromMilliseconds(100));
-
+    
     private static readonly Regex RegexDoubleQuotes = new Regex(@"\""(.*?)\""",
         RegexOptions.None, TimeSpan.FromMilliseconds(100));
 
     private static readonly Regex RegexParenthesis = new Regex(@"\((.*?)\)",
         RegexOptions.None, TimeSpan.FromMilliseconds(100));
+
+    private static readonly Regex RegexRomanNumeral = new Regex(@"^(X|IX|IV|V?I{0,3})$", RegexOptions.IgnoreCase,
+        TimeSpan.FromMilliseconds(100));
 
     private static readonly Regex RegexPeriodNotAtEnd =
         new Regex(".*\\..+$", RegexOptions.IgnoreCase, TimeSpan.FromMilliseconds(100));
