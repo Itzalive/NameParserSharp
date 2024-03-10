@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System;
+using System.Text;
 
 namespace NameParser;
 
@@ -431,7 +432,7 @@ public partial class HumanName
             var spaceSplitPartZero = parts[0].Span.SplitToSpan(' ').Select(p => new Piece(p)).ToList();
             var spaceSplitPartOne = parts[1].Span.SplitToSpan(' ').Select(p => new Piece(p)).ToList();
             var piecesPartOne = ParsePieces(spaceSplitPartOne, 1);
-            if (spaceSplitPartZero.Count > 1 && AreSuffixes(spaceSplitPartOne))
+            if (spaceSplitPartZero.Count > 1 && AreSuffixes(piecesPartOne))
             {
                 // suffix comma: title first middle last [suffix], suffix [suffix] [, suffix]
                 //               parts[0],                         parts[1:...]
