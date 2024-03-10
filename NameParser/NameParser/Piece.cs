@@ -48,7 +48,7 @@ namespace NameParser
 
         public bool IsRomanNumeral()
         {
-            return RegexRomanNumeral.IsMatch(this.String);
+            return RomanNumerals.Contains(this.LowerString);
         }
 
         public bool IsSuffix()

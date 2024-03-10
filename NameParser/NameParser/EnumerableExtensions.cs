@@ -1,12 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
 namespace NameParser;
 
 public static class EnumerableExtensions
 {
-    public static IEnumerable<(int First, int Last)> ConsecutiveRanges(this IEnumerable<int> source)
+    public static IEnumerable<(int First, int Last)> ConsecutiveRanges(this List<int> source)
     {
         using (var e = source.GetEnumerator())
         {

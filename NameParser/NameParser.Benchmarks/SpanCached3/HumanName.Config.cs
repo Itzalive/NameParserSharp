@@ -1,9 +1,6 @@
-﻿namespace NameParser.Benchmarks.SpanCached3;
+﻿using System.Text.RegularExpressions;
 
-using System;
-using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.Text.RegularExpressions;
+namespace NameParser.Benchmarks.SpanCached3;
 
 public partial class Piece
 {
@@ -12,9 +9,6 @@ public partial class Piece
     /// </summary>
     public static readonly HashSet<string> Conjunctions = new HashSet<string>
         { "&", "and", "et", "e", "of", "the", "und", "y" };
-
-    public readonly HashSet<string> CombinedConjunctions = [];
-
 
     /// <summary>
     /// Name pieces that appear before a last name. They join to the piece that follows them to make one new piece.
@@ -711,8 +705,6 @@ public partial class Piece
         "v",
     };
 
-    public readonly HashSet<string> CombinedSuffixesNotAcronyms = [];
-
     /// <summary>
     /// **Cannot include things that could also be first names**, e.g. "dean".
     /// Many of these from wikipedia: https://en.wikipedia.org/wiki/Title.
@@ -1347,16 +1339,32 @@ public partial class Piece
         "zoologist",
     };
 
-    public readonly HashSet<string> CombinedTitles = [];
-
-    private static readonly Regex RegexRomanNumeral = new Regex(@"^(X|IX|IV|V?I{0,3})$", RegexOptions.IgnoreCase,
-        TimeSpan.FromMilliseconds(100));
-
-    private static readonly Regex RegexInitial =
-        new Regex(@"^(\w\.|[A-Z])?$", RegexOptions.None, TimeSpan.FromMilliseconds(100));
+    private static readonly HashSet<string> RomanNumerals = new HashSet<string>
+    {
+        "i",
+        "ii",
+        "iii",
+        "iv",
+        "v",
+        "vi",
+        "vii",
+        "viii",
+        "ix",
+        "x",
+        "xi",
+        "xiii",
+        "xiv",
+        "xv",
+        "xvi",
+        "xvii",
+        "xviii",
+        "xix",
+        "xx"
+    };
 }
 
-public partial class HumanName {
+public partial class HumanName
+{
     /// <summary>
     /// Any pieces that are not capitalized by capitalizing the first letter.
     /// </summary>
@@ -1411,15 +1419,12 @@ public partial class HumanName {
 
     private static readonly Regex RegexQuotedWord = new Regex(@"(?<!\w)\'([^\s]*?)\'(?!\w)",
         RegexOptions.None, TimeSpan.FromMilliseconds(100));
-    
+
     private static readonly Regex RegexDoubleQuotes = new Regex(@"\""(.*?)\""",
         RegexOptions.None, TimeSpan.FromMilliseconds(100));
 
     private static readonly Regex RegexParenthesis = new Regex(@"\((.*?)\)",
         RegexOptions.None, TimeSpan.FromMilliseconds(100));
-
-    private static readonly Regex RegexPeriodNotAtEnd =
-        new Regex(".*\\..+$", RegexOptions.IgnoreCase, TimeSpan.FromMilliseconds(100));
 
     private static readonly Regex RegexPhd =
         new Regex(@"\s(ph\.?\s+d\.?)", RegexOptions.IgnoreCase, TimeSpan.FromMilliseconds(100));

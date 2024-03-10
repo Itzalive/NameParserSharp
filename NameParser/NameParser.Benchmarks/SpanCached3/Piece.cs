@@ -11,7 +11,7 @@
         private bool? isSuffix;
 
         public Piece(string value, bool? isTitle = null, bool? isConjunction = null, bool? isSuffix = null)
-            :this(value.AsMemory())
+            : this(value.AsMemory())
         {
             this.stringValue = value;
             this.isTitle = isTitle;
@@ -45,7 +45,7 @@
 
         public bool IsRomanNumeral()
         {
-            return RegexRomanNumeral.IsMatch(this.String);
+            return RomanNumerals.Contains(this.LowerString);
         }
 
         public bool IsSuffix()
