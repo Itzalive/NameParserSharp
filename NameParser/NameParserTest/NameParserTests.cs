@@ -160,106 +160,6 @@ namespace NameParserTest
             Assert.Equal("van der Waals", parsed.Last);
         }
 
-        [Fact]
-        public void TwoNamesMacAthur()
-        {
-            HumanName.ParseMultipleNames = true;
-            var parsed = new HumanName("John D. and Catherine T. MacArthur");
-
-            Assert.Equal("John", parsed.First);
-            Assert.Equal("D.", parsed.Middle);
-            Assert.Equal("MacArthur", parsed.Last);
-
-            Assert.NotNull(parsed.AdditionalName);
-
-            Assert.Equal("Catherine", parsed.AdditionalName.First);
-            Assert.Equal("T.", parsed.AdditionalName.Middle);
-            Assert.Equal("MacArthur", parsed.AdditionalName.Last);
-
-            Assert.Null(parsed.AdditionalName.AdditionalName);
-
-
-            parsed = new HumanName("John D. & Catherine T. MacArthur");
-
-            Assert.Equal("John", parsed.First);
-            Assert.Equal("D.", parsed.Middle);
-            Assert.Equal("MacArthur", parsed.Last);
-
-            Assert.NotNull(parsed.AdditionalName);
-
-            Assert.Equal("Catherine", parsed.AdditionalName.First);
-            Assert.Equal("T.", parsed.AdditionalName.Middle);
-            Assert.Equal("MacArthur", parsed.AdditionalName.Last);
-
-            Assert.Null(parsed.AdditionalName.AdditionalName);
-        }
-
-        [Fact]
-        public void TwoNamesTitleFirstInitialLast()
-        {
-            HumanName.ParseMultipleNames = true;
-            var parsed = new HumanName("Mr S Bloggs and Miss L Jones");
-
-            Assert.Equal("Mr", parsed.Title);
-            Assert.Equal("S", parsed.First);
-            Assert.Equal("", parsed.Middle);
-            Assert.Equal("Bloggs", parsed.Last);
-
-            Assert.NotNull(parsed.AdditionalName);
-
-            Assert.Equal("Miss", parsed.AdditionalName.Title);
-            Assert.Equal("L", parsed.AdditionalName.First);
-            Assert.Equal("", parsed.AdditionalName.Middle);
-            Assert.Equal("Jones", parsed.AdditionalName.Last);
-
-            Assert.Null(parsed.AdditionalName.AdditionalName);
-        }
-
-        [Fact]
-        public void TwoNamesTitleFirstInitialMiddleInitialLast()
-        {
-            HumanName.ParseMultipleNames = true;
-            var parsed = new HumanName("Mr S R Bloggs and Miss L B Jones");
-
-            Assert.Equal("Mr", parsed.Title);
-            Assert.Equal("S", parsed.First);
-            Assert.Equal("R", parsed.Middle);
-            Assert.Equal("Bloggs", parsed.Last);
-
-            Assert.NotNull(parsed.AdditionalName);
-
-            Assert.Equal("Miss", parsed.AdditionalName.Title);
-            Assert.Equal("L", parsed.AdditionalName.First);
-            Assert.Equal("B", parsed.AdditionalName.Middle);
-            Assert.Equal("Jones", parsed.AdditionalName.Last);
-
-            Assert.Null(parsed.AdditionalName.AdditionalName);
-        }
-
-        [Fact]
-        public void ThreeNames()
-        {
-            HumanName.ParseMultipleNames = true;
-            var johnSmith = new HumanName("Mr John Smith and Mrs Jane Doe and President Abraham Lincoln");
-
-            Assert.NotNull(johnSmith.AdditionalName);
-            var janeDoe = johnSmith.AdditionalName;
-
-            Assert.NotNull(janeDoe.AdditionalName);
-            var abrahamLincoln = janeDoe.AdditionalName;
-
-            Assert.Equal("Mr", johnSmith.Title);
-            Assert.Equal("John", johnSmith.First);
-            Assert.Equal("Smith", johnSmith.Last);
-
-            Assert.Equal("Mrs", janeDoe.Title);
-            Assert.Equal("Jane", janeDoe.First);
-            Assert.Equal("Doe", janeDoe.Last);
-
-            Assert.Equal("President", abrahamLincoln.Title);
-            Assert.Equal("Abraham", abrahamLincoln.First);
-            Assert.Equal("Lincoln", abrahamLincoln.Last);
-        }
 
         [Fact]
         // https://github.com/aeshirey/NameParserSharp/issues/8
@@ -353,7 +253,7 @@ namespace NameParserTest
             Assert.Equal("", asIs.Suffix);
 
 
-            Piece.Suffixes.Add("2nd");
+            HumanName.Suffixes.Add("2nd");
             var with2Nd = new HumanName("Mr. John Smith 2nd");
             Assert.Equal("Mr.", with2Nd.Title);
             Assert.Equal("John", with2Nd.First);

@@ -20,8 +20,6 @@ public partial class HumanName
     /// </summary>
     public bool IsUnparsable { get; private set; }
 
-    public static bool ParseMultipleNames { get; set; }
-
     /// <summary>
     /// The full name without nickname
     /// </summary>
@@ -61,13 +59,6 @@ public partial class HumanName
 
     public string Nickname => string.Join(" ", _NicknameList.Select(p => p.String));
 
-    /// <summary>
-    /// If <see cref="ParseMultipleNames"/> is true and the input contains "&" or "and", the additional
-    /// name will be parsed out and put into a second <see cref="HumanName"/> record. For example,
-    /// "John D. and Catherine T. MacArthur" should be parsed as {John, D, MacArthur} with an AdditionalName
-    /// set to the parsed value {Catherine, T, MacAthur}.
-    /// </summary>
-    public HumanName? AdditionalName { get; private set; }
 
     public string LastBase => string.Join(" ", _LastBaseList.Select(p => p.String));
     public string LastPrefixes => string.Join(" ", _LastPrefixList.Select(p => p.String));
@@ -302,32 +293,6 @@ public partial class HumanName
         _LastBaseList = words.Skip(prefixCount).ToList();
     }
 
-    private void PostProcessAdditionalName()
-    {
-        if (!ParseMultipleNames || AdditionalName == null)
-        {
-            return;
-        }
-
-        // Often, the secondary in a pair of names will contain the last name but not the primary.
-        // (eg, John D. and Catherine T. MacArthur). In this case, we should be able to infer
-        // the primary's last name from the secondary.
-        if (!_LastList.Any())
-        {
-            _LastList = AdditionalName._LastList;
-        }
-        else
-        {
-            // for names like "Smith, John And Jane", we'd have to propagate the name backward (possibly through multiple names)
-            var next = AdditionalName;
-            while (next != null && !next._LastList.Any())
-            {
-                next._LastList = _LastList;
-                next = next.AdditionalName;
-            }
-        }
-    }
-
     /// <summary>
     /// The main parse method for the parser. This method is run upon assignment to the
     /// fullName attribute or instantiation.
@@ -339,31 +304,6 @@ public partial class HumanName
     /// </summary>
     private void ParseFullName()
     {
-        if (ParseMultipleNames)
-        {
-            if (_FullName.Contains('&'))
-            {
-                var split = _FullName.IndexOf('&');
-
-                var primary = _FullName[..split];
-
-                var secondary = _FullName[(split + 1)..];
-                AdditionalName = new HumanName(secondary);
-
-                _FullName = primary;
-            }
-            else if (_FullName.ToLowerInvariant().Contains(" and "))
-            {
-                var split = _FullName.IndexOf(" and ", StringComparison.InvariantCultureIgnoreCase);
-
-                var primary = _FullName[..split];
-
-                var secondary = _FullName[(split + 5)..];
-                AdditionalName = new HumanName(secondary);
-
-                _FullName = primary;
-            }
-        }
 
         // Pre-process
         FixPhd(ref _FullName);
@@ -424,23 +364,6 @@ public partial class HumanName
                         // another component exists, so this is likely a middle name
                         _MiddleList.Add(piece);
                     }
-                    else if (!ParseMultipleNames || AdditionalName == null)
-                    {
-                        // no additional name. some last names can appear to be suffixes. try to figure this out
-                        if (_LastList.Count > 0 && piece.IsSuffix())
-                        {
-                            _SuffixList.Add(piece);
-                        }
-                        else
-                        {
-                            _LastList.Add(piece);
-                        }
-                    }
-                    else if (AdditionalName._LastList.Any() && isAnInitial)
-                    {
-                        // the additional name has a last, and this one looks like a middle. we'll save as a middle and later will copy the last name.
-                        _MiddleList.Add(piece);
-                    }
                     else
                     {
                         _LastList.Add(piece);
@@ -488,16 +411,6 @@ public partial class HumanName
                     if (nxt != null)
                     {
                         // another component exists, so this is likely a middle name
-                        _MiddleList.Add(piece);
-                    }
-                    else if (!ParseMultipleNames || AdditionalName == null)
-                    {
-                        // no additional name, so treat this as a last
-                        _LastList.Add(piece);
-                    }
-                    else if (AdditionalName._LastList.Any() && piece.IsAnInitial())
-                    {
-                        // the additional name has a last, and this one looks like a middle. we'll save as a middle and later will copy the last name.
                         _MiddleList.Add(piece);
                     }
                     else
@@ -570,7 +483,6 @@ public partial class HumanName
 
         PostProcessFirstnames();
         PostProcessLastname();
-        PostProcessAdditionalName();
     }
 
     private void FixPhd(ref string fullName)
