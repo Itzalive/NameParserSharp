@@ -1,15 +1,13 @@
-﻿using NameParser;
+﻿namespace NameParserTest;
+
+using NameParser;
+
 using Xunit;
 
-namespace NameParserTest;
-
-public partial class NameParserTests
-{
-    public class CapitalizationTests
-    {
+public partial class NameParserTests {
+    public class CapitalizationTests {
         [Fact]
-        public void TestCapitalizationExceptionForIii()
-        {
+        public void TestCapitalizationExceptionForIii() {
             var hn = new HumanName("juan q. xavier velasquez y garcia iii");
             hn.Normalize();
             Assert.Equal("Juan Q. Xavier Velasquez y Garcia III", hn.ToString());
@@ -18,24 +16,21 @@ public partial class NameParserTests
         // FIXME: this test does not pass due to a known issue
         // http://code.google.com/p/python-nameparser/issues/detail?id=22
         [Fact(Skip = "Expected failure")]
-        public void TestCapitalizationExceptionForAlreadyCapitalizedIiiknownfailure()
-        {
+        public void TestCapitalizationExceptionForAlreadyCapitalizedIiiknownfailure() {
             var hn = new HumanName("juan garcia III");
             hn.Normalize();
             Assert.Equal("Juan Garcia III", hn.ToString());
         }
 
         [Fact]
-        public void TestCapitalizeTitle()
-        {
+        public void TestCapitalizeTitle() {
             var hn = new HumanName("lt. gen. john a. kenneth doe iv");
             hn.Normalize();
             Assert.Equal("Lt. Gen. John A. Kenneth Doe IV", hn.ToString());
         }
 
         [Fact]
-        public void TestCapitalizeTitleToLower()
-        {
+        public void TestCapitalizeTitleToLower() {
             var hn = new HumanName("LT. GEN. JOHN A. KENNETH DOE IV");
             hn.Normalize();
             Assert.Equal("Lt. Gen. John A. Kenneth Doe IV", hn.ToString());
@@ -43,16 +38,14 @@ public partial class NameParserTests
 
         // Capitalization with M(a)c and hyphenated names
         [Fact]
-        public void TestCapitalizationWithMacAsHyphenatedNames()
-        {
+        public void TestCapitalizationWithMacAsHyphenatedNames() {
             var hn = new HumanName("donovan mcnabb-smith");
             hn.Normalize();
             Assert.Equal("Donovan McNabb-Smith", hn.ToString());
         }
 
         [Fact]
-        public void TestCapitizationMiddleInitialIsAlsoAConjunction()
-        {
+        public void TestCapitizationMiddleInitialIsAlsoAConjunction() {
             var hn = new HumanName("scott e. werner");
             hn.Normalize();
             Assert.Equal("Scott E. Werner", hn.ToString());
@@ -60,24 +53,21 @@ public partial class NameParserTests
 
         // Leaving already-capitalized names alone
         [Fact]
-        public void TestNoChangeToMixedChase()
-        {
+        public void TestNoChangeToMixedChase() {
             var hn = new HumanName("Shirley Maclaine");
             hn.Normalize();
             Assert.Equal("Shirley Maclaine", hn.ToString());
         }
 
         [Fact]
-        public void TestForceCapitalization()
-        {
+        public void TestForceCapitalization() {
             var hn = new HumanName("Shirley Maclaine");
             hn.Normalize(true);
             Assert.Equal("Shirley MacLaine", hn.ToString());
         }
 
         [Fact]
-        public void TestCapitalizeDiacritics()
-        {
+        public void TestCapitalizeDiacritics() {
             var hn = new HumanName("matthëus schmidt");
             hn.Normalize();
             Assert.Equal("Matthëus Schmidt", hn.ToString());
@@ -85,8 +75,7 @@ public partial class NameParserTests
 
         // http://code.google.com/p/python-nameparser/issues/detail?id=15
         [Fact]
-        public void TestDowncasingMac()
-        {
+        public void TestDowncasingMac() {
             var hn = new HumanName("RONALD MACDONALD");
             hn.Normalize();
             Assert.Equal("Ronald MacDonald", hn.ToString());
@@ -94,32 +83,28 @@ public partial class NameParserTests
 
         // http://code.google.com/p/python-nameparser/issues/detail?id=23
         [Fact]
-        public void TestDowncasingMc()
-        {
+        public void TestDowncasingMc() {
             var hn = new HumanName("RONALD MCDONALD");
             hn.Normalize();
             Assert.Equal("Ronald McDonald", hn.ToString());
         }
 
         [Fact]
-        public void TestShortNamesWithMac()
-        {
+        public void TestShortNamesWithMac() {
             var hn = new HumanName("mack johnson");
             hn.Normalize();
             Assert.Equal("Mack Johnson", hn.ToString());
         }
 
         [Fact]
-        public void TestPortuguesePrefixes()
-        {
+        public void TestPortuguesePrefixes() {
             var hn = new HumanName("joao da silva do amaral de souza");
             hn.Normalize();
             Assert.Equal("Joao da Silva do Amaral de Souza", hn.ToString());
         }
 
         [Fact]
-        public void TestCapitalizePrefixClashOnFirstName()
-        {
+        public void TestCapitalizePrefixClashOnFirstName() {
             var hn = new HumanName("van nguyen");
             hn.Normalize();
             Assert.Equal("Van Nguyen", hn.ToString());

@@ -1,27 +1,21 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text.RegularExpressions;
-
-namespace NameParser;
+﻿namespace NameParser;
 
 using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 
-public partial class Piece
+public partial class HumanName
 {
+    	
     /// <summary>
     /// Pieces that should join to their neighboring pieces, e.g. "and", "y" and "&". "of" and "the" are also include to facilitate joining multiple titles, e.g. "President of the United States".
     /// </summary>
-    public static readonly HashSet<string> Conjunctions = new HashSet<string>
-        { "&", "and", "et", "e", "of", "the", "und", "y" };
+    public static readonly HashSet<string> Conjunctions = ["&", "and", "et", "e", "of", "the", "und", "y"];
 
     /// <summary>
     /// Name pieces that appear before a last name. They join to the piece that follows them to make one new piece.
     /// </summary>
-    public static readonly HashSet<string> Prefixes = new HashSet<string>
-    {
+    public static readonly HashSet<string> Prefixes = [
         "abu",
         "al",
         "bin",
@@ -57,8 +51,8 @@ public partial class Piece
         "vander",
         "vel",
         "von",
-        "vom",
-    };
+        "vom"
+    ];
 
     /// <summary>
     /// Pieces that come at the end of the name but are not last names. These potentially
@@ -1368,20 +1362,17 @@ public partial class Piece
         "xix",
         "xx"
     };
-}
 
-public partial class HumanName
-{
     /// <summary>
     /// Any pieces that are not capitalized by capitalizing the first letter.
     /// </summary>
-    public static readonly ISet<Tuple<string, ReadOnlyMemory<char>>> CapitalizationExceptions = new HashSet<Tuple<string, ReadOnlyMemory<char>>>
+    public static readonly ISet<Tuple<string, string>> CapitalizationExceptions = new HashSet<Tuple<string, string>>
     {
-        Tuple.Create("ii", "II".AsMemory()),
-        Tuple.Create("iii", "III".AsMemory()),
-        Tuple.Create("iv", "IV".AsMemory()),
-        Tuple.Create("md", "M.D.".AsMemory()),
-        Tuple.Create("phd", "Ph.D.".AsMemory())
+        Tuple.Create("ii", "II"),
+        Tuple.Create("iii", "III"),
+        Tuple.Create("iv", "IV"),
+        Tuple.Create("md", "M.D."),
+        Tuple.Create("phd", "Ph.D.")
     };
 
     ///<summary>

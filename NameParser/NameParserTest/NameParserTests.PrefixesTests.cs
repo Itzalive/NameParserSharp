@@ -1,47 +1,41 @@
-﻿using NameParser;
+﻿namespace NameParserTest;
+
+using NameParser;
+
 using Xunit;
 
-namespace NameParserTest;
-
-public partial class NameParserTests
-{
-    public class PrefixesTests
-    {
+public partial class NameParserTests {
+    public class PrefixesTests {
         [Fact]
-        public void TestPrefix()
-        {
+        public void TestPrefix() {
             var hn = new HumanName("Juan del Sur");
             Assert.Equal("Juan", hn.First);
             Assert.Equal("del Sur", hn.Last);
         }
 
         [Fact]
-        public void TestPrefixWithPeriod()
-        {
+        public void TestPrefixWithPeriod() {
             var hn = new HumanName("Jill St. John");
             Assert.Equal("Jill", hn.First);
             Assert.Equal("St. John", hn.Last);
         }
 
         [Fact]
-        public void TestPrefixBeforeTwoPartLastName()
-        {
+        public void TestPrefixBeforeTwoPartLastName() {
             var hn = new HumanName("pennie von bergen wessels");
             Assert.Equal("pennie", hn.First);
             Assert.Equal("von bergen wessels", hn.Last);
         }
 
         [Fact]
-        public void TestPrefixIsFirstName()
-        {
+        public void TestPrefixIsFirstName() {
             var hn = new HumanName("Van Johnson");
             Assert.Equal("Van", hn.First);
             Assert.Equal("Johnson", hn.Last);
         }
 
         [Fact]
-        public void TestPrefixIsFirstNameWithMiddleName()
-        {
+        public void TestPrefixIsFirstNameWithMiddleName() {
             var hn = new HumanName("Van Jeremy Johnson");
             Assert.Equal("Van", hn.First);
             Assert.Equal("Jeremy", hn.Middle);
@@ -49,8 +43,7 @@ public partial class NameParserTests
         }
 
         [Fact]
-        public void TestPrefixBeforeTwoPartLastNameWithSuffix()
-        {
+        public void TestPrefixBeforeTwoPartLastNameWithSuffix() {
             var hn = new HumanName("pennie von bergen wessels III");
             Assert.Equal("pennie", hn.First);
             Assert.Equal("von bergen wessels", hn.Last);
@@ -58,8 +51,7 @@ public partial class NameParserTests
         }
 
         [Fact]
-        public void TestPrefixBeforeTwoPartLastNameWithAcronymSuffix()
-        {
+        public void TestPrefixBeforeTwoPartLastNameWithAcronymSuffix() {
             var hn = new HumanName("pennie von bergen wessels M.D.");
             Assert.Equal("pennie", hn.First);
             Assert.Equal("von bergen wessels", hn.Last);
@@ -67,8 +59,7 @@ public partial class NameParserTests
         }
 
         [Fact]
-        public void TestTwoPartLastNameWithSuffixComma()
-        {
+        public void TestTwoPartLastNameWithSuffixComma() {
             var hn = new HumanName("pennie von bergen wessels, III");
             Assert.Equal("pennie", hn.First);
             Assert.Equal("von bergen wessels", hn.Last);
@@ -76,8 +67,7 @@ public partial class NameParserTests
         }
 
         [Fact]
-        public void TestTwoPartLastNameWithSuffix()
-        {
+        public void TestTwoPartLastNameWithSuffix() {
             var hn = new HumanName("von bergen wessels, pennie III");
             Assert.Equal("pennie", hn.First);
             Assert.Equal("von bergen wessels", hn.Last);
@@ -85,8 +75,7 @@ public partial class NameParserTests
         }
 
         [Fact]
-        public void TestLastNameTwoPartLastNameWithTwoSuffixes()
-        {
+        public void TestLastNameTwoPartLastNameWithTwoSuffixes() {
             var hn = new HumanName("von bergen wessels MD, pennie III");
             Assert.Equal("pennie", hn.First);
             Assert.Equal("von bergen wessels", hn.Last);
@@ -94,8 +83,7 @@ public partial class NameParserTests
         }
 
         [Fact]
-        public void TestCommaTwoPartLastNameWithAcronymSuffix()
-        {
+        public void TestCommaTwoPartLastNameWithAcronymSuffix() {
             var hn = new HumanName("von bergen wessels, pennie MD");
             Assert.Equal("pennie", hn.First);
             Assert.Equal("von bergen wessels", hn.Last);
@@ -103,8 +91,7 @@ public partial class NameParserTests
         }
 
         [Fact]
-        public void TestCommaTwoPartLastNameWithSuffixInFirstPart()
-        {
+        public void TestCommaTwoPartLastNameWithSuffixInFirstPart() {
             // I'm kinda surprised this works, not really sure if this is a
             // realistic place for a suffix to be.
             var hn = new HumanName("von bergen wessels MD, pennie");
@@ -114,8 +101,7 @@ public partial class NameParserTests
         }
 
         [Fact]
-        public void TestTitleTwoPartLastNameWithSuffixInFirstPart()
-        {
+        public void TestTitleTwoPartLastNameWithSuffixInFirstPart() {
             var hn = new HumanName("pennie von bergen wessels MD, III");
             Assert.Equal("pennie", hn.First);
             Assert.Equal("von bergen wessels", hn.Last);
@@ -123,8 +109,7 @@ public partial class NameParserTests
         }
 
         [Fact]
-        public void TestPortugueseDos()
-        {
+        public void TestPortugueseDos() {
             var hn = new HumanName("Rafael Sousa dos Anjos");
             Assert.Equal("Rafael", hn.First);
             Assert.Equal("Sousa", hn.Middle);
@@ -132,8 +117,7 @@ public partial class NameParserTests
         }
 
         [Fact]
-        public void TestPortuguesePrefixes()
-        {
+        public void TestPortuguesePrefixes() {
             var hn = new HumanName("Joao da Silva do Amaral de Souza");
             Assert.Equal("Joao", hn.First);
             Assert.Equal("da Silva do Amaral", hn.Middle);
@@ -141,8 +125,7 @@ public partial class NameParserTests
         }
 
         [Fact]
-        public void TestThreeConjunctions()
-        {
+        public void TestThreeConjunctions() {
             var hn = new HumanName("Dr. Juan Q. Xavier de la dos Vega III");
             Assert.Equal("Juan", hn.First);
             Assert.Equal("de la dos Vega", hn.Last);
@@ -152,8 +135,7 @@ public partial class NameParserTests
         }
 
         [Fact]
-        public void TestLastnameThreeConjunctions()
-        {
+        public void TestLastnameThreeConjunctions() {
             var hn = new HumanName("de la dos Vega, Dr. Juan Q. Xavier III");
             Assert.Equal("Juan", hn.First);
             Assert.Equal("de la dos Vega", hn.Last);
@@ -163,8 +145,7 @@ public partial class NameParserTests
         }
 
         [Fact]
-        public void TestCommaThreeConjunctions()
-        {
+        public void TestCommaThreeConjunctions() {
             var hn = new HumanName("Dr. Juan Q. Xavier de la dos Vega, III");
             Assert.Equal("Juan", hn.First);
             Assert.Equal("de la dos Vega", hn.Last);
