@@ -1,0 +1,23 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFrameworks>net5.0;net6.0;net7.0;net8.0</TargetFrameworks>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <AssemblyVersion>2.0.0.0</AssemblyVersion>
+    <FileVersion>2.0.0.0</FileVersion>
+    <PackageLicenseExpression>LGPL-2.1-or-later</PackageLicenseExpression>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <PackageProjectUrl>https://github.com/Itzalive/NameParserSharp</PackageProjectUrl>
+    <Description>Parses full name into first name, middle name, last name, nickname, title, and suffix fields. An optimised implementation of the python-nameparser library for .NET.</Description>
+    <Version>2.0.0</Version>
+    <PackageId>Itzalive.NameParserSharp</PackageId>
+    <Authors>Pete Forrest and Adam Shirey</Authors>
+    <PackageTags>human name parser parsing first middle last nickname</PackageTags>
+    <RepositoryUrl>https://github.com/Itzalive/NameParserSharp</RepositoryUrl>
+    <LangVersion>latest</LangVersion>
+    <Title>NameParserSharp</Title>
+  </PropertyGroup>
+  <ItemGroup>
+    <None Include="LICENSE.txt" Pack="true" PackagePath="" />
+    <None Include="..\..\README.md" Pack="true" PackagePath="" />
+  </ItemGroup>
+</Project>
