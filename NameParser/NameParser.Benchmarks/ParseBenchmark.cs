@@ -195,6 +195,9 @@ namespace NameParser.Benchmarks
             }
         }
 
+        [Benchmark(OperationsPerInvoke = 172)]
+        public void PreviousVersionBasedOn036() => ParseNames(v => new V036.HumanName(v));
+
         [Benchmark(OperationsPerInvoke = 172, Baseline = true)]
         public void DirectPythonPort() => ParseNames(v => new Baseline.HumanName(v));
 
@@ -205,12 +208,6 @@ namespace NameParser.Benchmarks
         public void UsingSpansCached() => ParseNames(v => new SpanCached.HumanName(v));
 
         [Benchmark(OperationsPerInvoke = 172)]
-        public void UsingSpansCached2() => ParseNames(v => new SpanCached2.HumanName(v));
-
-        [Benchmark(OperationsPerInvoke = 172)]
-        public void UsingSpansCached3() => ParseNames(v => new SpanCached3.HumanName(v));
-
-        [Benchmark(OperationsPerInvoke = 172)]
-        public void UsingSpansCached4() => ParseNames(v => new SpanCached4.HumanName(v));
+        public void PackageImplementation() => ParseNames(v => new NameParser.HumanName(v));
     }
 }
